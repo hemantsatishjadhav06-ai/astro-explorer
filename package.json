@@ -1,0 +1,15 @@
+{
+  "name": "astro-explorer",
+  "version": "0.1.0",
+  "description": "Interactive birth-chart playground with a Western wheel and South Indian Kundli, synced to a draggable time scrubber.",
+  "main": "index.html",
+  "scripts": {
+    "test": "node test.js",
+    "start": "open index.html"
+  },
+  "keywords": ["astrology", "kundli", "birth-chart", "vedic", "western", "interactive"],
+  "license": "MIT",
+  "devDependencies": {
+    "astronomy-engine": "^2.1.19"
+  }
+}

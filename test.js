@@ -6,6 +6,9 @@ const Astronomy = require('astronomy-engine');
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 
 function getEclipticLongitude(bodyName, date) {
+  if (bodyName === 'Rahu' || bodyName === 'Ketu') {
+    return getMeanLunarNode(date, bodyName === 'Ketu');
+  }
   const time = Astronomy.MakeTime(date);
   let vec;
   if (bodyName === 'Moon') {
@@ -15,6 +18,15 @@ function getEclipticLongitude(bodyName, date) {
   }
   const ecl = Astronomy.Ecliptic(vec);
   return ((ecl.elon % 360) + 360) % 360;
+}
+
+function getMeanLunarNode(date, ketu) {
+  const J2000ms = Date.UTC(2000, 0, 1, 12, 0, 0);
+  const T = (date.getTime() - J2000ms) / (36525 * 86400 * 1000);
+  let lon = 125.04452 - 1934.13626 * T;
+  lon = ((lon % 360) + 360) % 360;
+  if (ketu) lon = (lon + 180) % 360;
+  return lon;
 }
 
 function longitudeToSign(lon) {
@@ -118,6 +130,20 @@ const ay2000 = getAyanamsa(j2000);
 const ay2026 = getAyanamsa(new Date(Date.UTC(2026, 0, 1, 12, 0, 0)));
 assert(Math.abs(ay2000 - 23.85) < 0.01, `Lahiri at J2000 ≈ 23.85° (got ${ay2000.toFixed(3)}°)`);
 assert(ay2026 > ay2000 && ay2026 - ay2000 < 1, `Lahiri drifts forward modestly: ${ay2000.toFixed(3)}° → ${ay2026.toFixed(3)}°`);
+
+// ===== Test 6a: Lunar nodes (Rahu / Ketu) =====
+console.log('\n— Lunar nodes —');
+const rahu = getEclipticLongitude('Rahu', j2000);
+const ketu = getEclipticLongitude('Ketu', j2000);
+assert(Math.abs(rahu - 125.0) < 0.5,
+  `Rahu mean node at J2000 ≈ 125° (got ${rahu.toFixed(2)}°)`);
+assert(Math.abs(((ketu - rahu - 180 + 540) % 360) - 180) < 0.001,
+  `Ketu is exactly 180° from Rahu (Δ = ${(((ketu - rahu) + 360) % 360).toFixed(2)}°)`);
+// Node moves backwards (retrograde) at ~19.3°/year
+const rahuLater = getEclipticLongitude('Rahu', new Date(j2000.getTime() + 365.25 * 24 * 3600 * 1000));
+const drift = ((rahu - rahuLater + 540) % 360) - 180;
+assert(drift > 18 && drift < 21,
+  `Rahu drifts retrograde ~19.3° per year (got ${drift.toFixed(2)}°)`);
 
 // ===== Test 6: Sidereal Sun should differ from tropical by ~ayanamsa =====
 console.log('\n— Sidereal vs tropical —');

@@ -1,0 +1,132 @@
+// Smoke test: mirrors the calculation logic in index.html and verifies
+// it produces sensible, finite results against known references.
+
+const Astronomy = require('astronomy-engine');
+
+const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+
+function getEclipticLongitude(bodyName, date) {
+  const time = Astronomy.MakeTime(date);
+  let vec;
+  if (bodyName === 'Moon') {
+    vec = Astronomy.GeoMoon(time);
+  } else {
+    vec = Astronomy.GeoVector(bodyName, time, true);
+  }
+  const ecl = Astronomy.Ecliptic(vec);
+  return ((ecl.elon % 360) + 360) % 360;
+}
+
+function longitudeToSign(lon) {
+  return Math.floor(((lon % 360) + 360) % 360 / 30);
+}
+
+function getAyanamsa(date) {
+  const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+  const yearsSince = (date.getTime() - J2000) / (365.25 * 24 * 3600 * 1000);
+  return 23.85 + 0.013979 * yearsSince;
+}
+
+function getAscendant(date, lat, lonEast) {
+  const time = Astronomy.MakeTime(date);
+  const gstHours = Astronomy.SiderealTime(time);
+  const lstDeg = ((gstHours * 15 + lonEast) % 360 + 360) % 360;
+  const epsRad = 23.4367 * Math.PI / 180;
+  const phiRad = lat * Math.PI / 180;
+  const ramcRad = lstDeg * Math.PI / 180;
+  const y = Math.cos(ramcRad);
+  const x = -(Math.sin(ramcRad) * Math.cos(epsRad) + Math.tan(phiRad) * Math.sin(epsRad));
+  let asc = Math.atan2(y, x) * 180 / Math.PI;
+  if (asc < 0) asc += 360;
+  const diff = ((asc - lstDeg) % 360 + 360) % 360;
+  if (diff > 180) asc = (asc + 180) % 360;
+  return asc;
+}
+
+let failed = 0;
+function assert(cond, msg) {
+  if (cond) console.log('  ✓ ' + msg);
+  else { console.log('  ✗ ' + msg); failed++; }
+}
+
+function approxEq(a, b, tol = 2) {
+  const d = Math.abs(((a - b + 540) % 360) - 180);
+  return d < tol;
+}
+
+// ===== Test 1: J2000 reference positions =====
+console.log('\n— J2000 (2000-01-01 12:00 UTC) tropical positions —');
+const j2000 = new Date(Date.UTC(2000, 0, 1, 12, 0, 0));
+const refs = {
+  Sun:     280.4,  // Capricorn
+  Mercury: 271.4,
+  Venus:   240.9,
+  Mars:    327.5,
+  Jupiter: 25.4,   // Aries
+  Saturn:  40.4,   // Taurus
+};
+for (const [body, expected] of Object.entries(refs)) {
+  const got = getEclipticLongitude(body, j2000);
+  assert(approxEq(got, expected, 2),
+    `${body} ≈ ${expected.toFixed(1)}° (got ${got.toFixed(2)}°, sign: ${SIGNS[longitudeToSign(got)]})`);
+}
+const moon = getEclipticLongitude('Moon', j2000);
+assert(moon >= 0 && moon < 360, `Moon longitude is in [0,360): ${moon.toFixed(2)}°`);
+
+// ===== Test 2: Sun returns to ~same longitude after 1 year =====
+console.log('\n— Sun returns yearly —');
+const oneYearLater = new Date(j2000.getTime() + 365.25 * 24 * 3600 * 1000);
+const sunNow = getEclipticLongitude('Sun', j2000);
+const sunYearLater = getEclipticLongitude('Sun', oneYearLater);
+assert(approxEq(sunNow, sunYearLater, 1.5),
+  `Sun differs by < 1.5° after one year: ${sunNow.toFixed(2)}° → ${sunYearLater.toFixed(2)}°`);
+
+// ===== Test 3: All planet longitudes are finite and in range =====
+console.log('\n— Sanity: bounded longitudes across many dates —');
+const bodies = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn'];
+let badCount = 0;
+for (let yr = 1950; yr <= 2050; yr += 5) {
+  const d = new Date(Date.UTC(yr, 5, 15, 12, 0, 0));
+  for (const b of bodies) {
+    const lon = getEclipticLongitude(b, d);
+    if (!Number.isFinite(lon) || lon < 0 || lon >= 360) {
+      console.log(`    ! ${b} on ${yr}: ${lon}`);
+      badCount++;
+    }
+  }
+}
+assert(badCount === 0, `All ${bodies.length * 21} (planet × year) values bounded and finite`);
+
+// ===== Test 4: Ascendant is finite and bounded =====
+console.log('\n— Ascendant calculation —');
+const asc = getAscendant(j2000, 28.6139, 77.2090);  // Delhi
+assert(Number.isFinite(asc) && asc >= 0 && asc < 360,
+  `Ascendant for Delhi at J2000: ${asc.toFixed(2)}° (${SIGNS[longitudeToSign(asc)]})`);
+
+// Test that the ascendant changes through a 24-hour day (covers full 360°)
+const ascendants = [];
+for (let h = 0; h < 24; h++) {
+  const d = new Date(Date.UTC(2000, 0, 1, h, 0, 0));
+  ascendants.push(getAscendant(d, 28.6139, 77.2090));
+}
+const ascSpread = Math.max(...ascendants) - Math.min(...ascendants);
+assert(ascSpread > 300, `Ascendant covers most of the zodiac in 24h (spread: ${ascSpread.toFixed(0)}°)`);
+
+// ===== Test 5: Ayanamsa drift is reasonable =====
+console.log('\n— Lahiri ayanamsa drift —');
+const ay2000 = getAyanamsa(j2000);
+const ay2026 = getAyanamsa(new Date(Date.UTC(2026, 0, 1, 12, 0, 0)));
+assert(Math.abs(ay2000 - 23.85) < 0.01, `Lahiri at J2000 ≈ 23.85° (got ${ay2000.toFixed(3)}°)`);
+assert(ay2026 > ay2000 && ay2026 - ay2000 < 1, `Lahiri drifts forward modestly: ${ay2000.toFixed(3)}° → ${ay2026.toFixed(3)}°`);
+
+// ===== Test 6: Sidereal Sun should differ from tropical by ~ayanamsa =====
+console.log('\n— Sidereal vs tropical —');
+const trop = getEclipticLongitude('Sun', j2000);
+const sid  = ((trop - ay2000) % 360 + 360) % 360;
+const dist = ((trop - sid + 540) % 360) - 180;
+assert(Math.abs(Math.abs(dist) - ay2000) < 0.01,
+  `Sidereal Sun = tropical Sun − ayanamsa (diff ${Math.abs(dist).toFixed(3)}° vs expected ${ay2000.toFixed(3)}°)`);
+
+// ===== Result =====
+console.log('\n' + (failed === 0 ? '✅ All tests passed.' : `❌ ${failed} test(s) failed.`));
+process.exit(failed === 0 ? 0 : 1);

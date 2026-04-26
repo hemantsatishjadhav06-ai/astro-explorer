@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astro Explorer — Interactive Birth Chart Playground</title>
+<style>
+  :root {
+    --bg-0: #07071a;
+    --bg-1: #0f0e2a;
+    --bg-2: #1a1843;
+    --ink: #e9e7ff;
+    --ink-dim: #9c9ac4;
+    --accent: #ffd166;
+    --accent-2: #b794f6;
+    --line: rgba(233, 231, 255, 0.18);
+    --card: rgba(255, 255, 255, 0.04);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(ellipse at top, var(--bg-2) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom right, #2a1850 0%, transparent 50%),
+      var(--bg-0);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, white, transparent),
+      radial-gradient(1px 1px at 70% 80%, white, transparent),
+      radial-gradient(1px 1px at 40% 50%, white, transparent),
+      radial-gradient(1px 1px at 85% 20%, white, transparent),
+      radial-gradient(2px 2px at 15% 75%, white, transparent),
+      radial-gradient(1px 1px at 55% 15%, white, transparent),
+      radial-gradient(1px 1px at 90% 60%, white, transparent),
+      radial-gradient(1px 1px at 30% 90%, white, transparent);
+    background-size: 100% 100%;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+  }
+  header {
+    text-align: center;
+    padding: 28px 20px 12px;
+    position: relative;
+    z-index: 1;
+  }
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 0;
+    background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.5px;
+  }
+  .tagline {
+    color: var(--ink-dim);
+    margin: 6px 0 0;
+    font-size: 14px;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 12px 20px 140px;
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(8px);
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .control-group label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-dim);
+  }
+  .control-group input,
+  .control-group select {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .control-group input:focus,
+  .control-group select:focus {
+    outline: none;
+    border-color: var(--accent-2);
+  }
+  .quick-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    grid-column: 1 / -1;
+    padding-top: 4px;
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+  }
+  button.chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  button.chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-2);
+  }
+  button.chip.active {
+    background: var(--accent-2);
+    color: var(--bg-0);
+    border-color: var(--accent-2);
+    font-weight: 600;
+  }
+  .charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    backdrop-filter: blur(8px);
+  }
+  .chart-card h2 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--ink-dim);
+    font-weight: 500;
+  }
+  .chart-card svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .planet { cursor: pointer; transition: r 0.15s, filter 0.15s; }
+  .planet:hover { filter: drop-shadow(0 0 8px currentColor); }
+  .planet-text { cursor: pointer; }
+  .planet-text:hover { fill: var(--accent) !important; }
+
+  .planets-flying {
+    transition: cx 0.4s ease, cy 0.4s ease;
+  }
+
+  .detail-card {
+    background: linear-gradient(135deg, rgba(183, 148, 246, 0.15), rgba(255, 209, 102, 0.08));
+    border: 1px solid var(--accent-2);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    min-height: 60px;
+  }
+  .detail-card .detail-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .detail-card .detail-symbol {
+    font-size: 28px;
+  }
+  .detail-card .detail-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .detail-card .detail-meta {
+    color: var(--ink-dim);
+    font-size: 13px;
+  }
+  .detail-card .detail-body {
+    margin-top: 8px;
+    color: var(--ink);
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  .detail-cta {
+    margin-top: 12px;
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg-0);
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .timeline {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, transparent, var(--bg-0) 30%);
+    padding: 20px 20px 14px;
+    z-index: 10;
+  }
+  .timeline-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: rgba(15, 14, 42, 0.85);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 16px;
+    backdrop-filter: blur(12px);
+  }
+  .play-btn {
+    background: var(--accent);
+    color: var(--bg-0);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .play-btn:hover { transform: scale(1.05); }
+  .scrubber {
+    flex: 1;
+    min-width: 200px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    outline: none;
+    cursor: grab;
+  }
+  .scrubber::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    cursor: grab;
+    box-shadow: 0 0 10px rgba(183, 148, 246, 0.5);
+  }
+  .scrubber::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    cursor: grab;
+    border: none;
+    box-shadow: 0 0 10px rgba(183, 148, 246, 0.5);
+  }
+  .current-time {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font-size: 13px;
+    min-width: 180px;
+    text-align: right;
+  }
+  .speed-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    padding-top: 6px;
+  }
+  .speed-row button {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .legend {
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 11px;
+    margin-top: 8px;
+  }
+  .footer {
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 12px;
+    padding: 30px 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+  .footer a { color: var(--accent-2); text-decoration: none; }
+  @media (max-width: 540px) {
+    .current-time { min-width: 140px; font-size: 11px; }
+    .timeline-inner { padding: 10px 12px; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Astro Explorer</h1>
+  <p class="tagline">Drag the timeline. Watch the planets dance across your chart.</p>
+</header>
+
+<main>
+  <section class="controls">
+    <div class="control-group">
+      <label for="birthDate">Birth date</label>
+      <input type="date" id="birthDate" value="2000-01-01">
+    </div>
+    <div class="control-group">
+      <label for="birthTime">Birth time</label>
+      <input type="time" id="birthTime" value="12:00">
+    </div>
+    <div class="control-group">
+      <label for="birthPlace">Birth place</label>
+      <select id="birthPlace"></select>
+    </div>
+    <div class="control-group">
+      <label for="zodiacMode">Zodiac system</label>
+      <select id="zodiacMode">
+        <option value="tropical">Western (Tropical)</option>
+        <option value="sidereal">Vedic (Sidereal — Lahiri)</option>
+      </select>
+    </div>
+    <div class="quick-row">
+      <button class="chip" id="snapBirth">⌖ Birth</button>
+      <button class="chip" id="snapToday">☉ Today</button>
+      <button class="chip" id="snap1y">+1 year</button>
+      <button class="chip" id="snap10y">+10 years</button>
+      <button class="chip" id="snapBack10y">−10 years</button>
+      <span style="margin-left:auto;color:var(--ink-dim);font-size:12px;">Tap any planet for details ↓</span>
+    </div>
+  </section>
+
+  <section class="detail-card" id="detailCard">
+    <div class="detail-row">
+      <span class="detail-symbol" id="detailSymbol">✨</span>
+      <h3 class="detail-title" id="detailTitle">Tap a planet on either chart to see its placement.</h3>
+    </div>
+    <div class="detail-meta" id="detailMeta"></div>
+    <div class="detail-body" id="detailBody"></div>
+  </section>
+
+  <section class="charts">
+    <div class="chart-card">
+      <h2>Western Wheel · 12 houses</h2>
+      <svg id="westernChart" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="chart-card">
+      <h2>South Indian Kundli</h2>
+      <svg id="kundliChart" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </section>
+
+  <p class="legend">
+    Houses calculated using <strong>whole-sign</strong> system. Sidereal mode uses the Lahiri ayanamsa.
+    Calculations powered by <a href="https://github.com/cosinekitty/astronomy" style="color:var(--accent-2);">astronomy-engine</a> (MIT). Open source — contribute on GitHub.
+  </p>
+</main>
+
+<section class="timeline">
+  <div class="timeline-inner">
+    <button class="play-btn" id="playBtn" aria-label="Play">▶</button>
+    <input type="range" class="scrubber" id="scrubber" min="-50" max="50" step="0.001" value="0">
+    <span class="current-time" id="currentTime">—</span>
+    <div class="speed-row">
+      <button class="chip" data-speed="86400">Day / sec</button>
+      <button class="chip active" data-speed="2592000">Month / sec</button>
+      <button class="chip" data-speed="31557600">Year / sec</button>
+      <button class="chip" data-speed="315576000">Decade / sec</button>
+    </div>
+  </div>
+</section>
+
+<p class="footer">
+  Built with curiosity · open source on <a href="#">GitHub</a> · not a substitute for a real astrologer
+</p>
+
+<!-- Astronomy library: pure JS, MIT, runs entirely in the browser -->
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<script>
+'use strict';
+
+// ---------- DATA ----------
+const PLANETS = [
+  { name: 'Sun',     body: 'Sun',     symbol: '☉', color: '#ffd166', meaning: 'core identity, vitality, the role you came here to play' },
+  { name: 'Moon',    body: 'Moon',    symbol: '☽', color: '#e6e6f0', meaning: 'emotions, instincts, what soothes you' },
+  { name: 'Mercury', body: 'Mercury', symbol: '☿', color: '#a0d8ff', meaning: 'mind, communication, how you think' },
+  { name: 'Venus',   body: 'Venus',   symbol: '♀', color: '#ffb6c1', meaning: 'love, beauty, what you value' },
+  { name: 'Mars',    body: 'Mars',    symbol: '♂', color: '#ff6b6b', meaning: 'drive, action, how you fight' },
+  { name: 'Jupiter', body: 'Jupiter', symbol: '♃', color: '#f6c177', meaning: 'expansion, luck, your philosophy' },
+  { name: 'Saturn',  body: 'Saturn',  symbol: '♄', color: '#9b8e7d', meaning: 'discipline, limits, the lesson' },
+];
+
+const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const SIGN_GLYPHS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+const SIGN_VIBES = [
+  'fiery, fast, pioneering',
+  'grounded, sensual, steady',
+  'curious, witty, dual',
+  'tender, protective, watery',
+  'radiant, proud, dramatic',
+  'analytical, useful, precise',
+  'graceful, fair, relational',
+  'intense, hidden, transformative',
+  'expansive, philosophical, free',
+  'ambitious, structured, patient',
+  'inventive, detached, futurist',
+  'dreamy, porous, mystical',
+];
+
+// Hand-picked global cities. lat, lon (east positive), tz offset hours.
+const CITIES = [
+  ['Delhi, IN',         28.6139,  77.2090,  5.5],
+  ['Mumbai, IN',        19.0760,  72.8777,  5.5],
+  ['Bengaluru, IN',     12.9716,  77.5946,  5.5],
+  ['Kolkata, IN',       22.5726,  88.3639,  5.5],
+  ['Chennai, IN',       13.0827,  80.2707,  5.5],
+  ['Hyderabad, IN',     17.3850,  78.4867,  5.5],
+  ['Pune, IN',          18.5204,  73.8567,  5.5],
+  ['Ahmedabad, IN',     23.0225,  72.5714,  5.5],
+  ['Jaipur, IN',        26.9124,  75.7873,  5.5],
+  ['Lucknow, IN',       26.8467,  80.9462,  5.5],
+  ['Varanasi, IN',      25.3176,  82.9739,  5.5],
+  ['Kathmandu, NP',     27.7172,  85.3240,  5.75],
+  ['Dhaka, BD',         23.8103,  90.4125,  6.0],
+  ['London, UK',        51.5074,  -0.1278,  0.0],
+  ['New York, US',      40.7128, -74.0060, -5.0],
+  ['Los Angeles, US',   34.0522,-118.2437, -8.0],
+  ['San Francisco, US', 37.7749,-122.4194, -8.0],
+  ['Toronto, CA',       43.6532, -79.3832, -5.0],
+  ['Mexico City, MX',   19.4326, -99.1332, -6.0],
+  ['São Paulo, BR',    -23.5505, -46.6333, -3.0],
+  ['Berlin, DE',        52.5200,  13.4050,  1.0],
+  ['Paris, FR',         48.8566,   2.3522,  1.0],
+  ['Madrid, ES',        40.4168,  -3.7038,  1.0],
+  ['Rome, IT',          41.9028,  12.4964,  1.0],
+  ['Cairo, EG',         30.0444,  31.2357,  2.0],
+  ['Lagos, NG',          6.5244,   3.3792,  1.0],
+  ['Dubai, AE',         25.2048,  55.2708,  4.0],
+  ['Tehran, IR',        35.6892,  51.3890,  3.5],
+  ['Moscow, RU',        55.7558,  37.6173,  3.0],
+  ['Beijing, CN',       39.9042, 116.4074,  8.0],
+  ['Shanghai, CN',      31.2304, 121.4737,  8.0],
+  ['Tokyo, JP',         35.6762, 139.6503,  9.0],
+  ['Seoul, KR',         37.5665, 126.9780,  9.0],
+  ['Singapore, SG',      1.3521, 103.8198,  8.0],
+  ['Bangkok, TH',       13.7563, 100.5018,  7.0],
+  ['Jakarta, ID',       -6.2088, 106.8456,  7.0],
+  ['Sydney, AU',       -33.8688, 151.2093, 11.0],
+  ['Auckland, NZ',     -36.8485, 174.7633, 13.0],
+];
+
+// ---------- STATE ----------
+const state = {
+  birthDate: new Date('2000-01-01T12:00:00Z'),  // UTC, derived from inputs+tz
+  cityIdx: 0,
+  zodiacMode: 'tropical',
+  currentDate: new Date(),
+  isPlaying: false,
+  playSpeed: 2592000,   // seconds-of-time per real-second
+  scrubberValue: 0,     // years offset from birth
+  selectedPlanet: null,
+};
+
+// ---------- DOM ----------
+const $ = (sel) => document.querySelector(sel);
+const els = {
+  birthDate:  $('#birthDate'),
+  birthTime:  $('#birthTime'),
+  birthPlace: $('#birthPlace'),
+  zodiac:     $('#zodiacMode'),
+  scrubber:   $('#scrubber'),
+  currentTime:$('#currentTime'),
+  playBtn:    $('#playBtn'),
+  westernChart: $('#westernChart'),
+  kundliChart:  $('#kundliChart'),
+  detailCard: $('#detailCard'),
+  detailSymbol: $('#detailSymbol'),
+  detailTitle:  $('#detailTitle'),
+  detailMeta:   $('#detailMeta'),
+  detailBody:   $('#detailBody'),
+};
+
+// Populate cities dropdown
+CITIES.forEach((c, i) => {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = c[0];
+  els.birthPlace.appendChild(opt);
+});
+
+// ---------- ASTRONOMY ----------
+function getEclipticLongitude(bodyName, date) {
+  const time = Astronomy.MakeTime(date);
+  let vec;
+  if (bodyName === 'Moon') {
+    vec = Astronomy.GeoMoon(time);
+  } else {
+    vec = Astronomy.GeoVector(bodyName, time, true);
+  }
+  const ecl = Astronomy.Ecliptic(vec);
+  // ecl.elon in degrees, in the range [0, 360)
+  return ((ecl.elon % 360) + 360) % 360;
+}
+
+// Lahiri ayanamsa: years × 50.27" / 3600, anchored at J2000 = 23.85°
+function getAyanamsa(date) {
+  const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+  const yearsSince = (date.getTime() - J2000) / (365.25 * 24 * 3600 * 1000);
+  return 23.85 + 0.013979 * yearsSince;
+}
+
+function applyZodiac(longitude, date) {
+  if (state.zodiacMode === 'sidereal') {
+    return ((longitude - getAyanamsa(date)) % 360 + 360) % 360;
+  }
+  return longitude;
+}
+
+// Ascendant from local sidereal time + geographic latitude
+function getAscendant(date, lat, lonEast) {
+  const time = Astronomy.MakeTime(date);
+  const gstHours = Astronomy.SiderealTime(time);  // GMST in hours
+  const lstDeg = ((gstHours * 15 + lonEast) % 360 + 360) % 360;
+  const epsRad = 23.4367 * Math.PI / 180;
+  const phiRad = lat * Math.PI / 180;
+  const ramcRad = lstDeg * Math.PI / 180;
+  // Standard horoscopic ascendant formula
+  const y = Math.cos(ramcRad);
+  const x = -(Math.sin(ramcRad) * Math.cos(epsRad) + Math.tan(phiRad) * Math.sin(epsRad));
+  let asc = Math.atan2(y, x) * 180 / Math.PI;
+  // Disambiguate the quadrant: ascendant must be roughly 90° east of MC
+  // (atan2 already places it correctly for most cases; nudge if it lands on the western horizon)
+  if (asc < 0) asc += 360;
+  // The ascendant should be the eastern intersection — ensure it's "ahead of" RAMC by ~90°
+  const diff = ((asc - lstDeg) % 360 + 360) % 360;
+  if (diff > 180) asc = (asc + 180) % 360;
+  return asc;
+}
+
+function longitudeToSign(lon) {
+  return Math.floor(((lon % 360) + 360) % 360 / 30);
+}
+
+function getHouseWholeSign(planetLon, ascLon) {
+  const ascSign = longitudeToSign(ascLon);
+  const planetSign = longitudeToSign(planetLon);
+  return ((planetSign - ascSign + 12) % 12) + 1;
+}
+
+function computeChart(date) {
+  const city = CITIES[state.cityIdx];
+  const lat = city[1], lonEast = city[2];
+  const ascRaw = getAscendant(date, lat, lonEast);
+  const asc = applyZodiac(ascRaw, date);
+
+  const planets = PLANETS.map(p => {
+    const rawLon = getEclipticLongitude(p.body, date);
+    const lon = applyZodiac(rawLon, date);
+    return {
+      ...p,
+      longitude: lon,
+      sign: SIGNS[longitudeToSign(lon)],
+      signIndex: longitudeToSign(lon),
+      degreeInSign: lon % 30,
+      house: getHouseWholeSign(lon, asc),
+    };
+  });
+
+  return { ascendant: asc, planets };
+}
+
+// ---------- SVG HELPERS ----------
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function svg(tag, attrs = {}, parent = null) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const k in attrs) {
+    if (attrs[k] != null) el.setAttribute(k, attrs[k]);
+  }
+  if (parent) parent.appendChild(el);
+  return el;
+}
+const toRad = d => d * Math.PI / 180;
+
+// In screen coords: y is flipped. Astrology charts traditionally place
+// the ascendant on the LEFT (9 o'clock). To accomplish this we draw the
+// zodiac so that "0° from ascendant" = 180° in screen-angle, increasing
+// counterclockwise (which is positive in math, but we flip y in SVG).
+// We use: screenAngle = 180° + (longitude - ascendant). Counterclockwise.
+function placeOnWheel(cx, cy, radius, longitudeFromAsc) {
+  const screenAngle = 180 + longitudeFromAsc;     // degrees
+  const r = toRad(screenAngle);
+  return {
+    x: cx + Math.cos(r) * radius,
+    y: cy - Math.sin(r) * radius,                  // flip y for SVG
+  };
+}
+
+// ---------- WESTERN WHEEL ----------
+function renderWestern(chart) {
+  const root = els.westernChart;
+  root.innerHTML = '';
+  const cx = 250, cy = 250;
+  const rOut = 235, rZodiac = 200, rHouse = 160, rPlanet = 180, rInner = 80;
+
+  // Outer rim
+  svg('circle', { cx, cy, r: rOut, fill: 'none', stroke: 'rgba(255,255,255,0.25)', 'stroke-width': 1.5 }, root);
+  svg('circle', { cx, cy, r: rZodiac, fill: 'none', stroke: 'rgba(255,255,255,0.25)', 'stroke-width': 1 }, root);
+  svg('circle', { cx, cy, r: rHouse, fill: 'none', stroke: 'rgba(255,255,255,0.15)', 'stroke-width': 1 }, root);
+  svg('circle', { cx, cy, r: rInner, fill: 'rgba(255,255,255,0.02)', stroke: 'rgba(255,255,255,0.1)', 'stroke-width': 1 }, root);
+
+  // Sign sectors and glyphs (rotated so ascendant sign sits at left = 1st house cusp)
+  const ascSignIdx = longitudeToSign(chart.ascendant);
+  const ascDegInSign = chart.ascendant - ascSignIdx * 30;
+  for (let i = 0; i < 12; i++) {
+    const startLonFromAsc = i * 30 - ascDegInSign;       // signs start at sign boundaries
+    const endLonFromAsc   = (i + 1) * 30 - ascDegInSign;
+    const aStart = toRad(180 + startLonFromAsc);
+    const aEnd   = toRad(180 + endLonFromAsc);
+    const x1 = cx + Math.cos(aStart) * rZodiac, y1 = cy - Math.sin(aStart) * rZodiac;
+    const x2 = cx + Math.cos(aStart) * rOut,    y2 = cy - Math.sin(aStart) * rOut;
+    const x3 = cx + Math.cos(aEnd)   * rOut,    y3 = cy - Math.sin(aEnd)   * rOut;
+    const x4 = cx + Math.cos(aEnd)   * rZodiac, y4 = cy - Math.sin(aEnd)   * rZodiac;
+    const path = `M ${x1} ${y1} L ${x2} ${y2} A ${rOut} ${rOut} 0 0 0 ${x3} ${y3} L ${x4} ${y4} A ${rZodiac} ${rZodiac} 0 0 1 ${x1} ${y1} Z`;
+    const signIdx = (ascSignIdx + i) % 12;
+    const fill = (i % 2 === 0) ? 'rgba(183,148,246,0.10)' : 'rgba(255,209,102,0.06)';
+    svg('path', { d: path, fill, stroke: 'rgba(255,255,255,0.08)' }, root);
+
+    // Sign glyph at sector midpoint
+    const mid = placeOnWheel(cx, cy, (rZodiac + rOut) / 2, (startLonFromAsc + endLonFromAsc) / 2);
+    const t = svg('text', {
+      x: mid.x, y: mid.y, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+      fill: 'rgba(255,255,255,0.85)', 'font-size': 18,
+    }, root);
+    t.textContent = SIGN_GLYPHS[signIdx];
+  }
+
+  // House cusp lines (whole-sign: every 30° from ascendant)
+  for (let h = 0; h < 12; h++) {
+    const lonFromAsc = h * 30;
+    const a = placeOnWheel(cx, cy, rInner, lonFromAsc);
+    const b = placeOnWheel(cx, cy, rZodiac, lonFromAsc);
+    const isAngular = (h % 3) === 0;   // 1, 4, 7, 10 — strong house cusps
+    svg('line', {
+      x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+      stroke: isAngular ? 'rgba(255,209,102,0.6)' : 'rgba(255,255,255,0.18)',
+      'stroke-width': isAngular ? 1.5 : 0.8,
+    }, root);
+
+    // House number, just inside
+    const labelPos = placeOnWheel(cx, cy, rInner + 14, lonFromAsc + 15);
+    const lbl = svg('text', {
+      x: labelPos.x, y: labelPos.y,
+      'text-anchor': 'middle', 'dominant-baseline': 'central',
+      fill: 'rgba(255,255,255,0.45)', 'font-size': 11,
+    }, root);
+    lbl.textContent = h + 1;
+  }
+
+  // Ascendant marker (left edge)
+  const ascPos = placeOnWheel(cx, cy, rOut + 8, 0);
+  const ascLbl = svg('text', {
+    x: ascPos.x - 6, y: ascPos.y, 'text-anchor': 'end', 'dominant-baseline': 'central',
+    fill: 'var(--accent)', 'font-size': 12, 'font-weight': 'bold', style: 'fill:#ffd166',
+  }, root);
+  ascLbl.textContent = 'ASC';
+
+  // Planets — spread radially so symbols don't overlap
+  const grouped = groupPlanetsByCloseness(chart.planets);
+  grouped.forEach(group => {
+    group.forEach((p, idxInGroup) => {
+      const lonFromAsc = p.longitude - chart.ascendant;
+      const r = rPlanet - idxInGroup * 22;
+      const pos = placeOnWheel(cx, cy, r, lonFromAsc);
+
+      // soft glow
+      svg('circle', { cx: pos.x, cy: pos.y, r: 14, fill: p.color, opacity: 0.18 }, root);
+      // body
+      const dot = svg('circle', {
+        cx: pos.x, cy: pos.y, r: 11, fill: p.color, class: 'planet planets-flying',
+        'data-planet': p.name, style: `color:${p.color}`,
+      }, root);
+      dot.addEventListener('click', () => selectPlanet(p));
+      // glyph
+      const glyph = svg('text', {
+        x: pos.x, y: pos.y, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+        fill: '#0c0a1f', 'font-size': 13, 'font-weight': 'bold',
+        'pointer-events': 'none',
+      }, root);
+      glyph.textContent = p.symbol;
+
+      // tick mark on the zodiac ring
+      const tick1 = placeOnWheel(cx, cy, rZodiac - 2, lonFromAsc);
+      const tick2 = placeOnWheel(cx, cy, rZodiac + 6, lonFromAsc);
+      svg('line', { x1: tick1.x, y1: tick1.y, x2: tick2.x, y2: tick2.y, stroke: p.color, 'stroke-width': 2 }, root);
+    });
+  });
+}
+
+// Cluster planets that are within ~7° so we can stack them radially
+function groupPlanetsByCloseness(planets) {
+  const sorted = [...planets].sort((a, b) => a.longitude - b.longitude);
+  const groups = [];
+  let cur = [];
+  for (let i = 0; i < sorted.length; i++) {
+    if (cur.length === 0) { cur.push(sorted[i]); continue; }
+    const last = cur[cur.length - 1];
+    const diff = Math.min(
+      Math.abs(sorted[i].longitude - last.longitude),
+      360 - Math.abs(sorted[i].longitude - last.longitude)
+    );
+    if (diff < 7) cur.push(sorted[i]);
+    else { groups.push(cur); cur = [sorted[i]]; }
+  }
+  if (cur.length) groups.push(cur);
+  return groups;
+}
+
+// ---------- SOUTH INDIAN KUNDLI ----------
+// Sign-fixed 4×4 grid. Pisces top-left; signs go clockwise: Aries, Taurus, ...
+const KUNDLI_CELLS = [
+  // [col, row] for sign indices 0..11 (Aries .. Pisces)
+  [1, 0], // Aries
+  [2, 0], // Taurus
+  [3, 0], // Gemini
+  [3, 1], // Cancer
+  [3, 2], // Leo
+  [3, 3], // Virgo
+  [2, 3], // Libra
+  [1, 3], // Scorpio
+  [0, 3], // Sagittarius
+  [0, 2], // Capricorn
+  [0, 1], // Aquarius
+  [0, 0], // Pisces
+];
+
+function renderKundli(chart) {
+  const root = els.kundliChart;
+  root.innerHTML = '';
+  const SIZE = 500;
+  const PAD = 30;
+  const cellSize = (SIZE - 2 * PAD) / 4;
+  const ascSign = longitudeToSign(chart.ascendant);
+
+  // Outer frame
+  svg('rect', {
+    x: PAD, y: PAD, width: cellSize * 4, height: cellSize * 4,
+    fill: 'rgba(255,255,255,0.02)', stroke: 'rgba(255,255,255,0.4)', 'stroke-width': 2,
+  }, root);
+
+  // Inner 2x2 hollow (the center "name" zone)
+  svg('rect', {
+    x: PAD + cellSize, y: PAD + cellSize, width: cellSize * 2, height: cellSize * 2,
+    fill: 'rgba(0,0,0,0.25)', stroke: 'rgba(255,255,255,0.4)', 'stroke-width': 1.5,
+  }, root);
+
+  // Center label
+  const cz = svg('text', {
+    x: SIZE / 2, y: SIZE / 2 - 8, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+    fill: 'rgba(255,255,255,0.4)', 'font-size': 16, 'font-weight': 600,
+  }, root);
+  cz.textContent = 'जन्म कुंडली';
+  const cz2 = svg('text', {
+    x: SIZE / 2, y: SIZE / 2 + 12, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+    fill: 'rgba(255,255,255,0.3)', 'font-size': 11, 'letter-spacing': '2',
+  }, root);
+  cz2.textContent = 'BIRTH CHART';
+
+  for (let signIdx = 0; signIdx < 12; signIdx++) {
+    const [col, row] = KUNDLI_CELLS[signIdx];
+    const x = PAD + col * cellSize;
+    const y = PAD + row * cellSize;
+
+    // Cell border (already part of outer frame, but lightly outline each)
+    svg('rect', {
+      x, y, width: cellSize, height: cellSize,
+      fill: 'transparent', stroke: 'rgba(255,255,255,0.25)', 'stroke-width': 1,
+    }, root);
+
+    // Mark Lagna with a corner diagonal
+    if (signIdx === ascSign) {
+      svg('line', {
+        x1: x, y1: y, x2: x + cellSize * 0.42, y2: y + cellSize * 0.42,
+        stroke: '#ffd166', 'stroke-width': 2.5,
+      }, root);
+      const lag = svg('text', {
+        x: x + cellSize * 0.5, y: y + cellSize * 0.45,
+        fill: '#ffd166', 'font-size': 11, 'font-weight': 700,
+      }, root);
+      lag.textContent = 'Lagna';
+    }
+
+    // Sign label (top-left)
+    const sl = svg('text', {
+      x: x + 8, y: y + 18,
+      fill: 'rgba(255,255,255,0.6)', 'font-size': 13,
+    }, root);
+    sl.textContent = `${SIGN_GLYPHS[signIdx]} ${SIGNS[signIdx].slice(0,3)}`;
+
+    // House number (top-right)
+    const houseNum = ((signIdx - ascSign + 12) % 12) + 1;
+    const hn = svg('text', {
+      x: x + cellSize - 8, y: y + 16, 'text-anchor': 'end',
+      fill: 'rgba(255,209,102,0.7)', 'font-size': 11,
+    }, root);
+    hn.textContent = `H${houseNum}`;
+
+    // Planets in this sign
+    const inSign = chart.planets.filter(p => p.signIndex === signIdx);
+    inSign.forEach((p, i) => {
+      const py = y + 36 + i * 18;
+      const t = svg('text', {
+        x: x + 8, y: py,
+        fill: p.color, 'font-size': 14, 'font-weight': 700,
+        class: 'planet-text', 'data-planet': p.name,
+        style: 'cursor:pointer;',
+      }, root);
+      t.textContent = `${p.symbol} ${p.name.slice(0,2)} ${Math.floor(p.degreeInSign)}°`;
+      t.addEventListener('click', () => selectPlanet(p));
+    });
+  }
+}
+
+// ---------- DETAIL CARD ----------
+function selectPlanet(p) {
+  state.selectedPlanet = p.name;
+  els.detailSymbol.textContent = p.symbol;
+  els.detailSymbol.style.color = p.color;
+  els.detailTitle.textContent = `${p.name} in ${p.sign}, ${ordinal(p.house)} house`;
+  const minutes = Math.floor((p.degreeInSign % 1) * 60);
+  els.detailMeta.textContent = `${Math.floor(p.degreeInSign)}° ${minutes}' · ${SIGN_VIBES[p.signIndex]}`;
+  els.detailBody.innerHTML =
+    `<strong>${p.name}</strong> is the principle of <em>${p.meaning}</em>. ` +
+    `Right now it sits in <strong>${p.sign}</strong> — a ${SIGN_VIBES[p.signIndex]} sign — ` +
+    `colouring how that energy plays out. Falling in your ${ordinal(p.house)} house, ` +
+    `it shapes the area of life that ${HOUSE_THEMES[p.house - 1]}.`;
+}
+
+function ordinal(n) {
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+const HOUSE_THEMES = [
+  'is your sense of self and how you arrive in the world',
+  'covers what you own, value, and hold onto',
+  'shapes your siblings, short journeys, and the texture of your everyday voice',
+  'is your roots, home, and what makes you feel safe',
+  'is creativity, romance, play, and the children of your imagination',
+  'is daily routine, work, health, and the small disciplines that keep you whole',
+  'is partnership, marriage, and how you mirror with another',
+  'is shared resources, the hidden, and the gates of transformation',
+  'is your beliefs, long journeys, and the meaning you reach for',
+  'is your career, your public face, and what you become known for',
+  'is your communities, allies, and the futures you imagine together',
+  'is the unconscious, the cost of past stories, and the spaces of retreat',
+];
+
+// ---------- TIME SCRUBBER ----------
+function applyScrubber() {
+  // value is years offset from birth date
+  const yrs = parseFloat(els.scrubber.value);
+  const ms = yrs * 365.25 * 24 * 3600 * 1000;
+  state.currentDate = new Date(state.birthDate.getTime() + ms);
+  refresh();
+}
+
+function refresh() {
+  const chart = computeChart(state.currentDate);
+  renderWestern(chart);
+  renderKundli(chart);
+  els.currentTime.textContent = formatDateLabel(state.currentDate);
+  if (state.selectedPlanet) {
+    const p = chart.planets.find(x => x.name === state.selectedPlanet);
+    if (p) selectPlanet(p);
+  }
+}
+
+function formatDateLabel(d) {
+  const opts = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' };
+  return d.toLocaleString(undefined, opts) + ' UTC';
+}
+
+// ---------- INPUTS ----------
+function rebuildBirthDateFromInputs() {
+  const dateStr = els.birthDate.value;     // "YYYY-MM-DD"
+  const timeStr = els.birthTime.value;     // "HH:MM"
+  const city = CITIES[state.cityIdx];
+  const tz = city[3];
+  if (!dateStr || !timeStr) return;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const [hh, mm] = timeStr.split(':').map(Number);
+  // Treat the entered time as LOCAL to the chosen city. UTC = local − tz.
+  const localUTC = Date.UTC(y, m - 1, d, hh, mm);
+  state.birthDate = new Date(localUTC - tz * 3600 * 1000);
+  applyScrubber();
+}
+
+els.birthDate.addEventListener('change', rebuildBirthDateFromInputs);
+els.birthTime.addEventListener('change', rebuildBirthDateFromInputs);
+els.birthPlace.addEventListener('change', () => {
+  state.cityIdx = parseInt(els.birthPlace.value, 10) || 0;
+  rebuildBirthDateFromInputs();
+});
+els.zodiac.addEventListener('change', () => {
+  state.zodiacMode = els.zodiac.value;
+  refresh();
+});
+els.scrubber.addEventListener('input', () => {
+  state.scrubberValue = parseFloat(els.scrubber.value);
+  applyScrubber();
+});
+
+// Snap buttons
+document.getElementById('snapBirth').addEventListener('click', () => {
+  els.scrubber.value = 0; applyScrubber();
+});
+document.getElementById('snapToday').addEventListener('click', () => {
+  const yrs = (Date.now() - state.birthDate.getTime()) / (365.25 * 24 * 3600 * 1000);
+  els.scrubber.value = Math.max(-50, Math.min(50, yrs));
+  applyScrubber();
+});
+document.getElementById('snap1y').addEventListener('click', () => {
+  els.scrubber.value = Math.min(50, parseFloat(els.scrubber.value) + 1);
+  applyScrubber();
+});
+document.getElementById('snap10y').addEventListener('click', () => {
+  els.scrubber.value = Math.min(50, parseFloat(els.scrubber.value) + 10);
+  applyScrubber();
+});
+document.getElementById('snapBack10y').addEventListener('click', () => {
+  els.scrubber.value = Math.max(-50, parseFloat(els.scrubber.value) - 10);
+  applyScrubber();
+});
+
+// Speed buttons
+document.querySelectorAll('.speed-row button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.speed-row button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.playSpeed = parseInt(b.dataset.speed, 10);
+  });
+});
+
+// Play / pause
+els.playBtn.addEventListener('click', () => {
+  state.isPlaying = !state.isPlaying;
+  els.playBtn.textContent = state.isPlaying ? '❚❚' : '▶';
+});
+
+// ---------- ANIMATION LOOP ----------
+let lastTick = null;
+function tick(t) {
+  if (lastTick == null) lastTick = t;
+  const dt = (t - lastTick) / 1000;
+  lastTick = t;
+  if (state.isPlaying) {
+    const dyears = (dt * state.playSpeed) / (365.25 * 24 * 3600);
+    let next = parseFloat(els.scrubber.value) + dyears;
+    if (next > 50) { next = 50; state.isPlaying = false; els.playBtn.textContent = '▶'; }
+    if (next < -50) { next = -50; state.isPlaying = false; els.playBtn.textContent = '▶'; }
+    els.scrubber.value = next;
+    applyScrubber();
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// ---------- BOOT ----------
+els.birthPlace.value = '0';
+state.cityIdx = 0;
+rebuildBirthDateFromInputs();
+</script>
+</body>
+</html>

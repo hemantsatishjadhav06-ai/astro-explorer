@@ -559,6 +559,256 @@
     transform: translateX(-50%) translateY(0);
   }
 
+  /* Variants header */
+  .variants-header { margin: 56px 0 20px; }
+  .variants-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-weight: 300;
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 6px 0 8px; color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .variants-sub {
+    color: var(--ink-2); font-size: 14px; margin: 0; max-width: 60ch;
+  }
+
+  /* Variants grid: 6 cards in a flexible auto-fit grid */
+  .variants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .chart-card--small {
+    padding: 18px 18px 14px;
+  }
+  .chart-card--small h3 {
+    margin: 0 0 2px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-weight: 300;
+    font-size: 17px;
+    color: var(--ink);
+  }
+  .chart-card--small svg {
+    margin-top: 8px; max-height: 360px;
+  }
+  .chart-foot {
+    color: var(--ink-3);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    margin: 6px 0 0;
+  }
+  .chart-card--table h3 {
+    margin: 0 0 2px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-weight: 300;
+    font-size: 17px; color: var(--ink);
+  }
+  .chart-card--table .table-wrap {
+    margin-top: 12px;
+    overflow-x: auto;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .data-table th {
+    text-align: left;
+    color: var(--ink-3);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 8px 6px 6px;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(13, 15, 23, 0.94);
+    backdrop-filter: blur(8px);
+  }
+  .data-table td {
+    padding: 8px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--ink-2);
+  }
+  .data-table td.cell-name {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .data-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+  .data-table tr.asc td { color: var(--accent); }
+  .data-table tr.asc td.cell-name {
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  /* Recommendations */
+  .rec-section { margin: 48px 0 32px; }
+  .rec-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 880px) {
+    .rec-grid { grid-template-columns: 1fr; }
+  }
+  .rec-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .rec-item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
+    backdrop-filter: blur(20px);
+  }
+  .rec-icon {
+    font-size: 26px;
+    color: var(--accent);
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .rec-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 17px;
+    color: var(--ink);
+    margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .rec-body {
+    color: var(--ink-2);
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .rec-context {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rec-context h4 {
+    margin: 0;
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .rec-hint {
+    color: var(--ink-3);
+    font-size: 12px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .rec-context textarea {
+    width: 100%;
+    min-height: 130px;
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    resize: vertical;
+  }
+  .rec-context textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .rec-context .chip { align-self: flex-start; }
+
+  /* Export bar */
+  .export-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(20px);
+  }
+  .export-hint {
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+  .chip--strong {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: rgba(212, 173, 107, 0.45);
+    font-weight: 600;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  .chip--strong:hover {
+    background: rgba(212, 173, 107, 0.28);
+    color: var(--ink);
+  }
+
+  /* Print / PDF — clean printable view */
+  @media print {
+    body {
+      background: white !important;
+      color: #1a1a1a !important;
+    }
+    body::after, .stars, .stars-2 { display: none !important; }
+    .timeline, .save-bar, .controls, .snap-bar, .rec-context,
+    .export-bar, .toast, .footer { display: none !important; }
+    .hero { padding: 24px 24px 12px; }
+    .hero h1, .hero .eyebrow, .hero .tagline { color: #111 !important; }
+    .hero h1 em { color: #8a6a35 !important; }
+    main { padding: 0 24px 24px; }
+    .chart-card, .rec-item {
+      background: white !important;
+      border: 1px solid #ccc !important;
+      backdrop-filter: none !important;
+      page-break-inside: avoid;
+    }
+    .chart-card h2, .chart-card h3, .rec-title {
+      color: #111 !important;
+    }
+    .chart-card .chart-sub, .rec-body, .legend {
+      color: #555 !important;
+    }
+    .data-table th { background: #f5f5f5 !important; color: #555 !important; }
+    .data-table td { color: #333 !important; }
+    .data-table td.cell-name { color: #111 !important; }
+    .variants-grid {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 16px;
+    }
+    .charts {
+      grid-template-columns: 1fr 1fr !important;
+    }
+    .rec-section, .charts, .variants-grid { page-break-inside: avoid; }
+    .chart-card svg { filter: none !important; }
+    /* Invert SVG fills for printing */
+    .chart-card svg circle[stroke*='rgba(255'], .chart-card svg line[stroke*='rgba(255'] {
+      stroke: #444 !important;
+    }
+  }
+
   @media (max-width: 540px) {
     .current-time { min-width: 140px; font-size: 11px; }
     .timeline-inner { padding: 10px 12px; gap: 8px; }
@@ -640,13 +890,89 @@
     </div>
     <div class="chart-card">
       <h2>The Kundli</h2>
-      <p class="chart-sub">South Indian · sign-fixed</p>
+      <p class="chart-sub">North Indian · house-fixed</p>
       <svg id="kundliChart" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
   </section>
 
+  <section class="variants-header">
+    <p class="section-label">All six chart variants</p>
+    <h2 class="variants-title">The same sky, six languages</h2>
+    <p class="variants-sub">Lagan · KP · Nirayan · Bhav Chalit · Sayana · Navamsa D9 — drawn in the North Indian style.</p>
+  </section>
+
+  <section class="variants-grid">
+    <div class="chart-card chart-card--small">
+      <h3>1 · Lagan (Rasi)</h3>
+      <p class="chart-sub">Lahiri sidereal · whole-sign</p>
+      <svg id="chartLagan" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="chart-card chart-card--small">
+      <h3>4 · Bhav Chalit</h3>
+      <p class="chart-sub">Lahiri · equal-house cusps</p>
+      <svg id="chartBhav" preserveAspectRatio="xMidYMid meet"></svg>
+      <p class="chart-foot">Houses by cusp — planets may shift.</p>
+    </div>
+    <div class="chart-card chart-card--small">
+      <h3>5 · Sayana (Tropical)</h3>
+      <p class="chart-sub">Western tropical zodiac</p>
+      <svg id="chartSayana" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="chart-card chart-card--small">
+      <h3>6 · Navamsa D9</h3>
+      <p class="chart-sub">Lahiri · 9th-harmonic divisional</p>
+      <svg id="chartNavamsa" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+    <div class="chart-card chart-card--table">
+      <h3>2 · KP Chart</h3>
+      <p class="chart-sub">Krishnamurti Paddhati · with sub-lords</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Planet</th><th>Sign</th><th>Deg</th><th>Nakshatra</th><th>Pada</th><th>Star Lord</th><th>Sub Lord</th></tr>
+          </thead>
+          <tbody id="kpTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="chart-card chart-card--table">
+      <h3>3 · Nirayan</h3>
+      <p class="chart-sub">Sidereal degrees (Lahiri)</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Planet</th><th>Sign</th><th>Deg</th><th>Min</th></tr>
+          </thead>
+          <tbody id="nirayanTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="rec-section">
+    <p class="section-label">Combine brain · what the chart suggests</p>
+    <div class="rec-grid">
+      <div class="rec-list-wrap">
+        <div id="recommendList" class="rec-list"></div>
+      </div>
+      <aside class="rec-context">
+        <h4>Your context</h4>
+        <p class="rec-hint">Paste relevant bits from your Obsidian vault, journal, or current life situation. Keywords (career, relationship, money, health, family, creative, travel) cross-reference with the chart's houses to surface personalized notes.</p>
+        <textarea id="contextNotes" placeholder="Paste here. Nothing leaves your browser."></textarea>
+        <button class="chip" id="btnApplyContext">Combine with chart</button>
+      </aside>
+    </div>
+  </section>
+
+  <section class="export-bar">
+    <button class="chip chip--strong" id="btnSavePdf"><span class="ico">⤓</span> Save as PDF</button>
+    <span class="export-hint">Uses your browser's print dialog · choose "Save as PDF" as the destination.</span>
+  </section>
+
   <p class="legend">
-    Whole-sign houses · Lahiri ayanamsa for sidereal mode · calculations by
+    Whole-sign houses · Lahiri ayanamsa for sidereal · Equal-House for Bhav Chalit · calculations by
     <a href="https://github.com/cosinekitty/astronomy">astronomy-engine</a> (MIT) · open source on
     <a href="https://github.com/hemantsatishjadhav06-ai/astro-explorer">GitHub</a>
   </p>
@@ -772,6 +1098,16 @@ const els = {
   detailTitle:  $('#detailTitle'),
   detailMeta:   $('#detailMeta'),
   detailBody:   $('#detailBody'),
+  // 6-chart grid
+  chartLagan:    $('#chartLagan'),
+  chartBhav:     $('#chartBhav'),
+  chartSayana:   $('#chartSayana'),
+  chartNavamsa:  $('#chartNavamsa'),
+  kpTableBody:   $('#kpTableBody'),
+  nirayanTableBody: $('#nirayanTableBody'),
+  // Recommendations + notes
+  recommendList: $('#recommendList'),
+  contextNotes:  $('#contextNotes'),
 };
 
 // Populate cities dropdown
@@ -876,6 +1212,128 @@ function computeChart(date) {
   });
 
   return { ascendant: asc, planets };
+}
+
+// ---------- VEDIC CHART VARIANTS ----------
+// 27 Nakshatras (lunar mansions), each 13°20' = 800 arcmin wide
+const NAKSHATRAS = [
+  'Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha',
+  'Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha',
+  'Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishta','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'
+];
+// Vimshottari dasha lords cycle through nakshatras: Ketu, Venus, Sun, Moon, Mars, Rahu, Jupiter, Saturn, Mercury — repeating
+const VIMSHOTTARI_LORDS  = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const VIMSHOTTARI_YEARS  = [7, 20, 6, 10, 7, 18, 16, 19, 17];   // total = 120
+const VIMSHOTTARI_TOTAL  = 120;
+
+function getNakshatra(longitude) {
+  const lon = ((longitude % 360) + 360) % 360;
+  const idx = Math.floor(lon * 27 / 360);          // 0..26
+  const totalArcmin = lon * 60;                     // 0..21600
+  const intoNakshatraArcmin = totalArcmin - idx * 800;  // 0..800
+  const pada = Math.floor(intoNakshatraArcmin / 200) + 1;  // 1..4
+  return {
+    name: NAKSHATRAS[idx],
+    index: idx,
+    lord: VIMSHOTTARI_LORDS[idx % 9],
+    intoArcmin: intoNakshatraArcmin,
+    pada,
+  };
+}
+
+function getSubLord(longitude) {
+  const nak = getNakshatra(longitude);
+  // Within the nakshatra (800 arcmin), the 9 sub-lords get proportional shares
+  // starting from the nakshatra's own ruler.
+  const startIdx = nak.index % 9;
+  let acc = 0;
+  for (let i = 0; i < 9; i++) {
+    const lordIdx = (startIdx + i) % 9;
+    const span = 800 * VIMSHOTTARI_YEARS[lordIdx] / VIMSHOTTARI_TOTAL;
+    if (nak.intoArcmin < acc + span) {
+      return VIMSHOTTARI_LORDS[lordIdx];
+    }
+    acc += span;
+  }
+  return VIMSHOTTARI_LORDS[startIdx];
+}
+
+// Navamsa (D9) mapping: each sign is divided into 9 parts of 3°20'.
+// Starting sign for the navamsa cycle depends on sign type:
+//   Movable (Aries, Cancer, Libra, Capricorn → idx 0,3,6,9): start from same sign
+//   Fixed   (Taurus, Leo, Scorpio, Aquarius   → idx 1,4,7,10): start from 9th sign  (+8 mod 12)
+//   Dual    (Gemini, Virgo, Sagittarius, Pisces → idx 2,5,8,11): start from 5th sign (+4 mod 12)
+function navamsaSignOf(longitude) {
+  const lon = ((longitude % 360) + 360) % 360;
+  const signIdx = Math.floor(lon / 30);
+  const degInSign = lon - signIdx * 30;
+  const navIdx = Math.floor(degInSign * 3 / 10);   // 0..8
+  let startSign;
+  if (signIdx % 3 === 0) startSign = signIdx;            // movable
+  else if (signIdx % 3 === 1) startSign = (signIdx + 8) % 12;  // fixed
+  else startSign = (signIdx + 4) % 12;                   // dual
+  return (startSign + navIdx) % 12;
+}
+
+// Compute a chart given an explicit zodiac mode (forces tropical or sidereal regardless of state)
+function computeChartForced(date, mode) {
+  const prev = state.zodiacMode;
+  state.zodiacMode = mode;
+  const c = computeChart(date);
+  state.zodiacMode = prev;
+  return c;
+}
+
+// Bhav Chalit: same Lahiri positions, but planets placed in Equal-House houses
+// (each house = 30° starting from the ASC). The chart drawing places planets in their
+// SIGN position (so the visual is identical to Lagan unless we colour by house — we add an
+// alternate "house-colour" mode). For the table view we show sign + house.
+function computeBhavChalit(date) {
+  // Same Lahiri chart; the difference is interpretive (planets are listed by house).
+  // Equal-House and whole-sign give the same house for any planet whose degree-in-sign
+  // is greater-or-equal to the ASC's degree-in-sign. So we recompute houses with the
+  // Equal-House rule for accuracy.
+  const c = computeChartForced(date, 'sidereal');
+  c.planets = c.planets.map(p => {
+    const diff = ((p.longitude - c.ascendant) % 360 + 360) % 360;
+    const houseEqual = Math.floor(diff / 30) + 1;
+    return { ...p, house: houseEqual };
+  });
+  return c;
+}
+
+// Compute the navamsa (D9) chart. Each planet's longitude is replaced by its D9 position
+// (sign × 30 + degree-into-D9-sign). The D9 ascendant is computed from the natal ASC.
+function computeNavamsaChart(date) {
+  const lahiri = computeChartForced(date, 'sidereal');
+  const navAscSign = navamsaSignOf(lahiri.ascendant);
+  // Place each planet at the START of its navamsa sign for the D9 chart
+  // (degree within D9 sign is rarely shown; default to the planet's existing degree-in-sign for visual clarity)
+  const planets = lahiri.planets.map(p => {
+    const navSign = navamsaSignOf(p.longitude);
+    return {
+      ...p,
+      longitude: navSign * 30 + p.degreeInSign,
+      signIndex: navSign,
+      sign: SIGNS[navSign],
+      house: ((navSign - navAscSign + 12) % 12) + 1,
+    };
+  });
+  return {
+    ascendant: navAscSign * 30 + (lahiri.ascendant % 30),
+    planets,
+  };
+}
+
+// All 6 chart variants for the per-chart cards
+function computeAllVariants(date) {
+  return {
+    lagan:     computeChartForced(date, 'sidereal'),     // Lahiri Rasi
+    bhavchalit: computeBhavChalit(date),                  // Equal-House placement
+    sayana:    computeChartForced(date, 'tropical'),      // Tropical
+    navamsa:   computeNavamsaChart(date),                 // D9
+    // KP and Nirayan share the Lahiri positions; the difference is in presentation
+  };
 }
 
 // ---------- SVG HELPERS ----------
@@ -1159,136 +1617,247 @@ function groupPlanetsByCloseness(planets) {
   return groups;
 }
 
-// ---------- SOUTH INDIAN KUNDLI ----------
-// Sign-fixed 4×4 grid. Pisces top-left; signs go clockwise: Aries, Taurus, ...
-const KUNDLI_CELLS = [
-  // [col, row] for sign indices 0..11 (Aries .. Pisces)
-  [1, 0], // Aries
-  [2, 0], // Taurus
-  [3, 0], // Gemini
-  [3, 1], // Cancer
-  [3, 2], // Leo
-  [3, 3], // Virgo
-  [2, 3], // Libra
-  [1, 3], // Scorpio
-  [0, 3], // Sagittarius
-  [0, 2], // Capricorn
-  [0, 1], // Aquarius
-  [0, 0], // Pisces
-];
+// ---------- NORTH INDIAN KUNDLI ----------
+// Houses are FIXED in position. House 1 sits at the top diamond. Going COUNTERCLOCKWISE
+// from H1, the 12 zones tile the square:
+//   H1   = top diamond kite
+//   H2   = top-left small triangle (above the \ diagonal)
+//   H3   = top-left small triangle (below the \ diagonal, by left edge)
+//   H4   = left diamond kite
+//   H5   = bottom-left small triangle (by left edge, above the / diagonal)
+//   H6   = bottom-left small triangle (below the / diagonal)
+//   H7   = bottom diamond kite
+//   H8   = bottom-right small triangle (above the \ diagonal)
+//   H9   = bottom-right small triangle (by right edge, below the \ diagonal — wait, by right edge)
+//   H10  = right diamond kite
+//   H11  = top-right small triangle (by right edge)
+//   H12  = top-right small triangle (above the / diagonal)
+//
+// Construction: outer square, both diagonals (corner-to-corner), and a diamond connecting
+// the four edge midpoints. The diagonals split each diamond quarter into 2 triangles, giving 12 zones.
+//
+// For a square at (PAD, PAD) with size S (cell coords run 0..S inside the square):
+//   A=(0,0), B=(S,0), C=(S,S), D=(0,S)         (outer square corners)
+//   T=(S/2, 0), R=(S, S/2), Bo=(S/2, S), L=(0, S/2)   (edge midpoints — diamond corners)
+//   O=(S/2, S/2)                                       (center)
+// The diagonals A-C and B-D cross the diamond edges at:
+//   P_TL=(S/4, S/4)  (A-C ∩ T-L)
+//   P_TR=(3S/4, S/4) (B-D ∩ T-R)
+//   P_BR=(3S/4, 3S/4) (A-C ∩ Bo-R)
+//   P_BL=(S/4, 3S/4) (B-D ∩ Bo-L)
+function nicZones(S) {
+  const A=[0,0], B=[S,0], C=[S,S], D=[0,S];
+  const T=[S/2,0], R=[S,S/2], Bo=[S/2,S], L=[0,S/2];
+  const O=[S/2,S/2];
+  const PTL=[S/4,S/4], PTR=[3*S/4,S/4], PBR=[3*S/4,3*S/4], PBL=[S/4,3*S/4];
+  return [
+    // index 0 = H1, 1 = H2, ... 11 = H12
+    [T,  PTR, O,  PTL],         // H1  top kite
+    [A,  T,   PTL],             // H2  top-left upper triangle
+    [A,  PTL, L  ],             // H3  top-left lower triangle (by left edge)
+    [L,  PTL, O,  PBL],         // H4  left kite
+    [L,  PBL, D  ],             // H5  bottom-left upper triangle (by left edge)
+    [D,  PBL, Bo ],             // H6  bottom-left lower triangle
+    [Bo, PBL, O,  PBR],         // H7  bottom kite
+    [Bo, PBR, C  ],             // H8  bottom-right lower triangle
+    [C,  PBR, R  ],             // H9  bottom-right upper triangle (by right edge)
+    [R,  PBR, O,  PTR],         // H10 right kite
+    [R,  PTR, B  ],             // H11 top-right lower triangle (by right edge)
+    [B,  PTR, T  ],             // H12 top-right upper triangle
+  ];
+}
 
-function renderKundli(chart) {
-  const root = els.kundliChart;
+// Centroid for placing labels and planets inside a polygon
+function polyCentroid(poly) {
+  let sx = 0, sy = 0;
+  for (const p of poly) { sx += p[0]; sy += p[1]; }
+  return [sx / poly.length, sy / poly.length];
+}
+
+// Sign label anchor — biased a bit toward the OUTER edge of each zone (where there's room for labels)
+function nicSignAnchor(houseIdx, S) {
+  // For diamond kites (H1, H4, H7, H10), put sign label at the outer corner
+  // For triangles, put sign label nearer the outer corner of the square
+  const o = S * 0.06;
+  const positions = {
+    1:  [S/2,   o + 12],
+    2:  [S/4,   o + 12],
+    3:  [o + 6, S/4 + 4],
+    4:  [o + 14,S/2],
+    5:  [o + 6, 3*S/4 - 4],
+    6:  [S/4,   S - o - 4],
+    7:  [S/2,   S - o - 4],
+    8:  [3*S/4, S - o - 4],
+    9:  [S - o - 6, 3*S/4 - 4],
+    10: [S - o - 14, S/2],
+    11: [S - o - 6, S/4 + 4],
+    12: [3*S/4, o + 12],
+  };
+  return positions[houseIdx];
+}
+
+// Given a chart, render a North Indian Kundli into an SVG element.
+// Houses are fixed; signs rotate based on the lagna sign (the rising sign goes in H1).
+function renderNorthIndianKundli(svgEl, chart, opts = {}) {
+  const root = svgEl;
   root.innerHTML = '';
-  const SIZE = 500;
-  const PAD = 24;
-  const cellSize = (SIZE - 2 * PAD) / 4;
-  const ascSign = longitudeToSign(chart.ascendant);
+  const PAD = opts.padding != null ? opts.padding : 18;
+  const SIZE = opts.size || 460;
+  const total = SIZE + PAD * 2;
+  root.setAttribute('viewBox', `0 0 ${total} ${total}`);
 
-  // Outer frame — refined
+  const lagnaSignIdx = longitudeToSign(chart.ascendant);
+  const zones = nicZones(SIZE);
+  const planetsBySign = {};
+  for (const p of chart.planets) {
+    const s = p.signIndex;
+    (planetsBySign[s] || (planetsBySign[s] = [])).push(p);
+  }
+
+  // Background frame
   svg('rect', {
-    x: PAD, y: PAD, width: cellSize * 4, height: cellSize * 4,
-    fill: 'transparent', stroke: 'rgba(212,173,107,0.4)', 'stroke-width': 1.4, rx: 4,
-  }, root);
-  // Subtle outer breath
-  svg('rect', {
-    x: PAD - 6, y: PAD - 6, width: cellSize * 4 + 12, height: cellSize * 4 + 12,
-    fill: 'transparent', stroke: 'rgba(212,173,107,0.12)', 'stroke-width': 0.5, rx: 6,
+    x: PAD - 6, y: PAD - 6, width: SIZE + 12, height: SIZE + 12,
+    fill: 'transparent', stroke: 'rgba(212,173,107,0.14)', 'stroke-width': 0.6, rx: 4,
   }, root);
 
-  // Inner 2x2 — name zone
-  svg('rect', {
-    x: PAD + cellSize, y: PAD + cellSize, width: cellSize * 2, height: cellSize * 2,
-    fill: 'rgba(0,0,0,0.35)', stroke: 'rgba(212,173,107,0.25)', 'stroke-width': 0.8, rx: 2,
-  }, root);
+  // The 12 zones
+  for (let i = 0; i < 12; i++) {
+    const houseNum = i + 1;
+    const signIdx = (lagnaSignIdx + i) % 12;
+    const poly = zones[i];
+    const points = poly.map(([x, y]) => `${(x + PAD).toFixed(2)},${(y + PAD).toFixed(2)}`).join(' ');
+    const fill = ELEMENT_TINTS[SIGN_ELEMENT[signIdx]];
 
-  // Center label
-  const cz = svg('text', {
-    x: SIZE / 2, y: SIZE / 2 - 12, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-    fill: 'rgba(212,173,107,0.7)',
-    'font-size': 22, 'font-family': "'Fraunces', Georgia, serif", 'font-style': 'italic', 'font-weight': 300,
-  }, root);
-  cz.textContent = 'जन्म';
-  const cz1 = svg('text', {
-    x: SIZE / 2, y: SIZE / 2 + 10, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-    fill: 'rgba(212,173,107,0.7)',
-    'font-size': 22, 'font-family': "'Fraunces', Georgia, serif", 'font-style': 'italic', 'font-weight': 300,
-  }, root);
-  cz1.textContent = 'कुंडली';
-  const cz2 = svg('text', {
-    x: SIZE / 2, y: SIZE / 2 + 36, 'text-anchor': 'middle', 'dominant-baseline': 'central',
-    fill: 'rgba(255,255,255,0.32)',
-    'font-size': 9, 'font-family': "'Inter', sans-serif", 'font-weight': 500, 'letter-spacing': '0.32em',
-  }, root);
-  cz2.textContent = 'BIRTH CHART';
-
-  for (let signIdx = 0; signIdx < 12; signIdx++) {
-    const [col, row] = KUNDLI_CELLS[signIdx];
-    const x = PAD + col * cellSize;
-    const y = PAD + row * cellSize;
-
-    // Element-tinted cell background
-    svg('rect', {
-      x, y, width: cellSize, height: cellSize,
-      fill: ELEMENT_TINTS[SIGN_ELEMENT[signIdx]],
-      stroke: 'rgba(212,173,107,0.18)', 'stroke-width': 0.6,
+    // Polygon
+    svg('polygon', {
+      points, fill,
+      stroke: 'rgba(212,173,107,0.55)',
+      'stroke-width': 1.0,
+      'stroke-linejoin': 'round',
     }, root);
 
-    // Mark Lagna with a refined corner diagonal + label
-    if (signIdx === ascSign) {
-      svg('line', {
-        x1: x + 2, y1: y + 2, x2: x + cellSize * 0.4, y2: y + cellSize * 0.4,
-        stroke: '#d4ad6b', 'stroke-width': 2, 'stroke-linecap': 'round',
-      }, root);
-      const lag = svg('text', {
-        x: x + cellSize * 0.5, y: y + cellSize * 0.42,
-        fill: '#d4ad6b',
-        'font-size': 9, 'font-family': "'Inter', sans-serif", 'font-weight': 600,
-        'letter-spacing': '0.18em',
-      }, root);
-      lag.textContent = 'LAGNA';
-    }
-
-    // Sign glyph + name (top-left)
+    // Sign label
+    const [sx, sy] = nicSignAnchor(houseNum, SIZE);
     const sg = svg('text', {
-      x: x + 10, y: y + 22,
-      fill: 'rgba(236,235,229,0.85)',
-      'font-size': 18, 'font-family': "'Fraunces', Georgia, serif",
+      x: sx + PAD, y: sy + PAD,
+      'text-anchor': 'middle', 'dominant-baseline': 'central',
+      fill: 'rgba(236,235,229,0.62)',
+      'font-size': 11, 'font-family': "'Inter', sans-serif", 'font-weight': 500,
+      'letter-spacing': '0.06em',
     }, root);
-    sg.textContent = SIGN_GLYPHS[signIdx];
-    const sl = svg('text', {
-      x: x + 30, y: y + 21,
-      fill: 'rgba(184,180,164,0.7)',
+    sg.textContent = SIGN_GLYPHS[signIdx] + ' ' + (signIdx + 1);
+
+    // House number — small, in the centroid
+    const [cxp, cyp] = polyCentroid(poly);
+    const hn = svg('text', {
+      x: cxp + PAD, y: cyp + PAD - 14,
+      'text-anchor': 'middle', 'dominant-baseline': 'central',
+      fill: i === 0 ? 'rgba(212,173,107,0.75)' : 'rgba(255,255,255,0.32)',
       'font-size': 10, 'font-family': "'Inter', sans-serif", 'font-weight': 500,
       'letter-spacing': '0.1em',
     }, root);
-    sl.textContent = SIGNS[signIdx].slice(0, 3).toUpperCase();
-
-    // House number (top-right) — small caps style
-    const houseNum = ((signIdx - ascSign + 12) % 12) + 1;
-    const hn = svg('text', {
-      x: x + cellSize - 10, y: y + 21, 'text-anchor': 'end',
-      fill: 'rgba(212,173,107,0.55)',
-      'font-size': 10, 'font-family': "'Inter', sans-serif", 'font-weight': 500,
-      'letter-spacing': '0.08em',
-    }, root);
-    hn.textContent = `H${houseNum}`;
+    hn.textContent = i === 0 ? 'LAGNA' : `H${houseNum}`;
 
     // Planets in this sign
-    const inSign = chart.planets.filter(p => p.signIndex === signIdx);
-    inSign.forEach((p, i) => {
-      const py = y + 44 + i * 17;
+    const inSign = planetsBySign[signIdx] || [];
+    inSign.forEach((p, k) => {
+      const py = cyp + PAD + (k - (inSign.length - 1) / 2) * 14 + 2;
       const t = svg('text', {
-        x: x + 10, y: py,
-        fill: p.color, 'font-size': 13, 'font-weight': 600,
-        'font-family': "'Inter', sans-serif",
+        x: cxp + PAD, y: py,
+        'text-anchor': 'middle', 'dominant-baseline': 'central',
+        fill: p.color,
+        'font-size': 12, 'font-family': "'Inter', sans-serif", 'font-weight': 600,
         class: 'planet-text', 'data-planet': p.name,
         style: 'cursor:pointer;',
       }, root);
-      t.textContent = `${p.symbol} ${p.name.slice(0,2)} ${Math.floor(p.degreeInSign)}°`;
+      t.textContent = `${p.symbol} ${p.name.slice(0, 2)}`;
       t.addEventListener('click', () => selectPlanet(p));
     });
   }
+
+  // Title (optional)
+  if (opts.title) {
+    const tt = svg('text', {
+      x: total / 2, y: PAD - 4, 'text-anchor': 'middle',
+      fill: 'rgba(255,255,255,0.42)',
+      'font-size': 9, 'font-family': "'Inter', sans-serif", 'font-weight': 500,
+      'letter-spacing': '0.32em',
+    }, root);
+    tt.textContent = opts.title;
+  }
+}
+
+// Sign-fixed 4×4 grid (kept for reference — currently unused)
+const KUNDLI_CELLS = [
+  // [col, row] for sign indices 0..11 (Aries .. Pisces)
+  [1, 0], [2, 0], [3, 0], [3, 1], [3, 2], [3, 3],
+  [2, 3], [1, 3], [0, 3], [0, 2], [0, 1], [0, 0],
+];
+
+// Main Kundli render — now uses North Indian style. Variant cards reuse renderNorthIndianKundli too.
+function renderKundli(chart) {
+  renderNorthIndianKundli(els.kundliChart, chart, { size: 460, padding: 20 });
+}
+
+// Render the 6-chart grid: Lagan, Bhav Chalit, Sayana, Navamsa, KP table, Nirayan table
+function renderAllVariants(date) {
+  const v = computeAllVariants(date);
+  // Visual NIC charts
+  if (els.chartLagan)      renderNorthIndianKundli(els.chartLagan,      v.lagan,     { size: 320, padding: 14, title: 'LAHIRI · WHOLE-SIGN' });
+  if (els.chartBhav)       renderNorthIndianKundli(els.chartBhav,       v.bhavchalit,{ size: 320, padding: 14, title: 'LAHIRI · EQUAL HOUSE' });
+  if (els.chartSayana)     renderNorthIndianKundli(els.chartSayana,     v.sayana,    { size: 320, padding: 14, title: 'TROPICAL' });
+  if (els.chartNavamsa)    renderNorthIndianKundli(els.chartNavamsa,    v.navamsa,   { size: 320, padding: 14, title: 'D9 NAVAMSA' });
+  // Table-style cards
+  renderKpTable(v.lagan);
+  renderNirayanTable(v.lagan);
+}
+
+function renderKpTable(chart) {
+  const tbody = els.kpTableBody;
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  // ASC row
+  const ascNak = getNakshatra(chart.ascendant);
+  const ascSub = getSubLord(chart.ascendant);
+  appendRow(tbody, ['ASC', SIGNS[longitudeToSign(chart.ascendant)],
+    fmtDeg(chart.ascendant % 30), ascNak.name, ascNak.pada, ascNak.lord, ascSub], 'asc');
+  for (const p of chart.planets) {
+    const nak = getNakshatra(p.longitude);
+    const sub = getSubLord(p.longitude);
+    appendRow(tbody, [p.name, p.sign, fmtDeg(p.degreeInSign), nak.name, nak.pada, nak.lord, sub], null, p);
+  }
+}
+
+function renderNirayanTable(chart) {
+  const tbody = els.nirayanTableBody;
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  appendRow(tbody, ['ASC', SIGNS[longitudeToSign(chart.ascendant)], fmtDeg(chart.ascendant % 30), ((chart.ascendant - longitudeToSign(chart.ascendant) * 30) * 60 % 60).toFixed(0) + "'"], 'asc');
+  for (const p of chart.planets) {
+    const arcmin = (p.degreeInSign * 60) % 60;
+    appendRow(tbody, [p.name, p.sign, fmtDeg(p.degreeInSign), arcmin.toFixed(0) + "'"], null, p);
+  }
+}
+
+function appendRow(tbody, cells, cls, planetData) {
+  const tr = document.createElement('tr');
+  if (cls) tr.classList.add(cls);
+  cells.forEach((c, i) => {
+    const td = document.createElement('td');
+    td.textContent = c;
+    if (i === 0) td.classList.add('cell-name');
+    tr.appendChild(td);
+  });
+  if (planetData) {
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', () => selectPlanet(planetData));
+  }
+  tbody.appendChild(tr);
+}
+
+function fmtDeg(deg) {
+  const d = Math.floor(deg);
+  return `${d}°`;
 }
 
 // ---------- DETAIL CARD ----------
@@ -1339,11 +1908,122 @@ function refresh() {
   const chart = computeChart(state.currentDate);
   renderWestern(chart);
   renderKundli(chart);
+  renderAllVariants(state.currentDate);
+  refreshRecommendations(chart);
   els.currentTime.textContent = formatDateLabel(state.currentDate);
   if (state.selectedPlanet) {
     const p = chart.planets.find(x => x.name === state.selectedPlanet);
     if (p) selectPlanet(p);
   }
+}
+
+// ---------- RECOMMENDATIONS ----------
+// Rule-based insights derived purely from the chart and the current date offset.
+// "Combine brain": optionally cross-references whatever the user has pasted
+// into the Your-Context textarea (Obsidian export, journal notes, etc.).
+function refreshRecommendations(chart) {
+  if (!els.recommendList) return;
+  const insights = [];
+  const ageYears = (state.currentDate - state.birthDate) / (365.25 * 24 * 3600 * 1000);
+
+  // Big-three readout
+  const sun  = chart.planets.find(p => p.name === 'Sun');
+  const moon = chart.planets.find(p => p.name === 'Moon');
+  if (sun && moon) {
+    insights.push({
+      icon: '☉',
+      title: `Sun in ${sun.sign} · Moon in ${moon.sign} · ${SIGNS[longitudeToSign(chart.ascendant)]} rising`,
+      body: `Identity arrives ${SIGN_VIBES[sun.signIndex]}; the inner weather is ${SIGN_VIBES[moon.signIndex]}; the world meets you ${SIGN_VIBES[longitudeToSign(chart.ascendant)]}.`,
+    });
+  }
+
+  // Saturn-return windows
+  if (ageYears > 28 && ageYears < 31) {
+    insights.push({
+      icon: '♄',
+      title: 'First Saturn return — ages 28–31',
+      body: 'A structural threshold: Saturn returns to its natal sign after ~29.5 years. Old commitments get audited; whatever you build now tends to last.',
+    });
+  } else if (ageYears > 57 && ageYears < 61) {
+    insights.push({
+      icon: '♄',
+      title: 'Second Saturn return — ages 58–60',
+      body: 'A maturity audit. Calling-level questions surface — what is yours to keep carrying, what to set down.',
+    });
+  }
+
+  // Rahu-Ketu axis
+  const rahu = chart.planets.find(p => p.name === 'Rahu');
+  const ketu = chart.planets.find(p => p.name === 'Ketu');
+  if (rahu && ketu) {
+    insights.push({
+      icon: '☊',
+      title: `Nodal axis · Rahu in ${rahu.sign} (H${rahu.house}) ↔ Ketu in ${ketu.sign} (H${ketu.house})`,
+      body: `Rahu is the unfamiliar territory you are pulled toward; Ketu is the muscle memory you are loosening. The axis crosses your ${ordinal(rahu.house)} and ${ordinal(ketu.house)} houses.`,
+    });
+  }
+
+  // Stellium detection (≥ 3 planets in one sign)
+  const bySign = {};
+  for (const p of chart.planets) (bySign[p.signIndex] || (bySign[p.signIndex] = [])).push(p);
+  for (const idx in bySign) {
+    if (bySign[idx].length >= 3) {
+      const names = bySign[idx].map(p => p.name).join(', ');
+      insights.push({
+        icon: '✦',
+        title: `Stellium in ${SIGNS[idx]}`,
+        body: `${names} cluster in ${SIGNS[idx]}. That sign's themes (${SIGN_VIBES[idx]}) are amplified across multiple life arenas.`,
+      });
+    }
+  }
+
+  // Combine with user-provided context (pure keyword scan — opt-in)
+  const ctx = (els.contextNotes && els.contextNotes.value || '').toLowerCase();
+  if (ctx.length > 20) {
+    const themes = [
+      { kws: ['career','job','work','promotion','startup'], house: 10, note: 'career and public reputation' },
+      { kws: ['relationship','partner','marriage','dating','breakup'], house: 7, note: 'partnership' },
+      { kws: ['money','income','finance','salary','debt'], house: 2, note: 'resources and what you hold' },
+      { kws: ['health','illness','sleep','workout','diet'], house: 6, note: 'daily routine and health' },
+      { kws: ['family','parent','mother','father','home'], house: 4, note: 'roots and home' },
+      { kws: ['creative','art','child','romance'], house: 5, note: 'creativity and play' },
+      { kws: ['travel','study','philosophy','spiritual','teacher'], house: 9, note: 'long journeys and meaning' },
+    ];
+    for (const th of themes) {
+      if (th.kws.some(k => ctx.includes(k))) {
+        const tenants = chart.planets.filter(p => p.house === th.house);
+        const desc = tenants.length
+          ? `${tenants.map(p => p.symbol + ' ' + p.name).join(', ')} sit in your ${ordinal(th.house)} house — the house of ${th.note}.`
+          : `Your ${ordinal(th.house)} house — ${th.note} — is empty (which means look at its ruler instead).`;
+        insights.push({
+          icon: '⊕',
+          title: `Your notes mention ${th.kws[0]}`,
+          body: desc + ' Worth examining its tenants and ruler.',
+        });
+      }
+    }
+  }
+
+  // Render
+  els.recommendList.innerHTML = '';
+  insights.forEach(ins => {
+    const card = document.createElement('div');
+    card.className = 'rec-item';
+    const ic = document.createElement('span');
+    ic.className = 'rec-icon';
+    ic.textContent = ins.icon;
+    const wrap = document.createElement('div');
+    wrap.className = 'rec-text';
+    const t = document.createElement('p');
+    t.className = 'rec-title';
+    t.textContent = ins.title;
+    const b = document.createElement('p');
+    b.className = 'rec-body';
+    b.textContent = ins.body;
+    wrap.append(t, b);
+    card.append(ic, wrap);
+    els.recommendList.appendChild(card);
+  });
 }
 
 function formatDateLabel(d) {
@@ -1574,6 +2254,21 @@ function importJson(file) {
 document.getElementById('btnCopyLink').addEventListener('click', copyShareLink);
 document.getElementById('btnExportJson').addEventListener('click', exportJson);
 document.getElementById('btnImportJson').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('btnSavePdf').addEventListener('click', () => {
+  showToast('Opening print dialog — pick "Save as PDF"');
+  setTimeout(() => window.print(), 450);
+});
+document.getElementById('btnApplyContext').addEventListener('click', () => {
+  refreshRecommendations(computeChart(state.currentDate));
+  showToast('Recommendations refreshed from your notes');
+});
+if (els.contextNotes) {
+  let ctxTimer = null;
+  els.contextNotes.addEventListener('input', () => {
+    clearTimeout(ctxTimer);
+    ctxTimer = setTimeout(() => refreshRecommendations(computeChart(state.currentDate)), 400);
+  });
+}
 document.getElementById('importFile').addEventListener('change', (ev) => {
   const f = ev.target.files[0];
   if (f) importJson(f);

@@ -153,6 +153,74 @@ const dist = ((trop - sid + 540) % 360) - 180;
 assert(Math.abs(Math.abs(dist) - ay2000) < 0.01,
   `Sidereal Sun = tropical Sun − ayanamsa (diff ${Math.abs(dist).toFixed(3)}° vs expected ${ay2000.toFixed(3)}°)`);
 
+// ===== Test 7: Nakshatra + sub-lord (Vimshottari) =====
+console.log('\n— Nakshatras & sub-lords —');
+const NAKS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha',
+  'Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha',
+  'Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishta','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
+const VL = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const VY = [7, 20, 6, 10, 7, 18, 16, 19, 17];
+
+function getNakshatra(longitude) {
+  const lon = ((longitude % 360) + 360) % 360;
+  const idx = Math.floor(lon * 27 / 360);
+  const intoArcmin = lon * 60 - idx * 800;
+  return { name: NAKS[idx], index: idx, lord: VL[idx % 9], intoArcmin, pada: Math.floor(intoArcmin / 200) + 1 };
+}
+function getSubLord(longitude) {
+  const nak = getNakshatra(longitude);
+  const startIdx = nak.index % 9;
+  let acc = 0;
+  for (let i = 0; i < 9; i++) {
+    const lordIdx = (startIdx + i) % 9;
+    const span = 800 * VY[lordIdx] / 120;
+    if (nak.intoArcmin < acc + span) return VL[lordIdx];
+    acc += span;
+  }
+  return VL[startIdx];
+}
+
+// 0° = Ashwini (Ketu's nakshatra)
+const ash = getNakshatra(0);
+assert(ash.name === 'Ashwini' && ash.lord === 'Ketu' && ash.pada === 1,
+  `0° → Ashwini · Ketu · pada 1 (got ${ash.name} · ${ash.lord} · pada ${ash.pada})`);
+
+// 13°20' = boundary into Bharani (Venus)
+const bhar = getNakshatra(13.34);
+assert(bhar.name === 'Bharani' && bhar.lord === 'Venus',
+  `13°20' → Bharani · Venus (got ${bhar.name} · ${bhar.lord})`);
+
+// First fraction of any nakshatra is sub-lord = nakshatra's own lord
+assert(getSubLord(0.05) === 'Ketu',
+  `Sub-lord at 0°03' = Ketu (got ${getSubLord(0.05)})`);
+
+// Sub-lord cycles through all 9 lords across full 360°
+const subSet = new Set();
+for (let lon = 0; lon < 360; lon += 1) subSet.add(getSubLord(lon));
+assert(subSet.size === 9, `Sub-lord covers all 9 Vimshottari lords (got ${subSet.size})`);
+
+// ===== Test 8: Navamsa (D9) =====
+console.log('\n— Navamsa D9 —');
+function navamsaSignOf(longitude) {
+  const lon = ((longitude % 360) + 360) % 360;
+  const signIdx = Math.floor(lon / 30);
+  const degInSign = lon - signIdx * 30;
+  const navIdx = Math.floor(degInSign * 3 / 10);
+  let startSign;
+  if (signIdx % 3 === 0) startSign = signIdx;
+  else if (signIdx % 3 === 1) startSign = (signIdx + 8) % 12;
+  else startSign = (signIdx + 4) % 12;
+  return (startSign + navIdx) % 12;
+}
+// Movable: Aries 0° → starts from Aries → navamsa Aries
+assert(navamsaSignOf(0) === 0, `Aries 0° → D9 Aries (got idx ${navamsaSignOf(0)})`);
+// Movable: Aries 26°40' (8th navamsa) → 8th from Aries = Sagittarius
+assert(navamsaSignOf(26.7) === 8, `Aries 26°40' → D9 Sagittarius (got idx ${navamsaSignOf(26.7)})`);
+// Fixed: Taurus 0° (idx 1) → starts from 9th sign = Capricorn (idx 9)
+assert(navamsaSignOf(30) === 9, `Taurus 0° → D9 Capricorn (got idx ${navamsaSignOf(30)})`);
+// Dual: Gemini 0° (idx 2) → starts from 5th sign = Libra (idx 6)
+assert(navamsaSignOf(60) === 6, `Gemini 0° → D9 Libra (got idx ${navamsaSignOf(60)})`);
+
 // ===== Result =====
 console.log('\n' + (failed === 0 ? '✅ All tests passed.' : `❌ ${failed} test(s) failed.`));
 process.exit(failed === 0 ? 0 : 1);

@@ -8,13 +8,23 @@ Built as a free experimentation tool for an astrologer's website. The depth live
 
 ## What it does
 
-- Renders a birth chart in two languages at once: Western circular wheel + South Indian Kundli
+- Renders a birth chart in two languages at once: Western circular wheel + North Indian Kundli
+- A grid of **all six chart variants** drawn in North Indian style:
+  - **Lagan (Rasi)** — Lahiri sidereal, whole-sign houses
+  - **KP Chart** — sub-lord and nakshatra detail in a Krishnamurti table
+  - **Nirayan** — sidereal degree-and-minute table
+  - **Bhav Chalit** — equal-house cusps applied to Lahiri positions
+  - **Sayana (Tropical)** — Western tropical zodiac
+  - **Navamsa D9** — 9th-harmonic divisional chart with proper Aries/Taurus/Gemini rules
 - Date / time / location input with a curated list of global cities
 - Toggle between **Tropical** (Western) and **Sidereal / Lahiri** (Vedic) zodiac
 - A timeline scrubber with play / pause and speed controls (Day · Month · Year · Decade per second)
 - Snap buttons: jump to **birth**, **today**, **+1 year**, **±10 years**
 - Tap any planet — get its sign, house, degree, and a short interpretation
-- Whole-sign houses, the same system used in classical Vedic astrology
+- Whole-sign houses by default, the same system used in classical Vedic astrology
+- **Recommendations** rule-based engine derived from the chart (Saturn return windows, nodal axis, stelliums, big-three readout)
+- **Your context** textarea — paste relevant Obsidian / journal notes; keywords cross-reference with house themes
+- **Save as PDF** via the browser's print dialog, with a clean printable layout
 
 ## Save · Share · Restore
 

@@ -323,6 +323,137 @@
     z-index: 1;
   }
   .footer a { color: var(--accent-2); text-decoration: none; }
+
+  .save-panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .save-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .save-panel h2 {
+    margin: 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--ink-dim);
+    font-weight: 500;
+  }
+  .save-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .save-status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 6px #4ade80;
+  }
+  .save-status .dot.dirty { background: #fbbf24; box-shadow: 0 0 6px #fbbf24; }
+  .save-targets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .save-target {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .save-target-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .save-target-name {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-dim);
+    font-weight: 600;
+  }
+  .save-target-state {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.4);
+  }
+  .save-target-state.idle {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ink-dim);
+    border-color: var(--line);
+  }
+  .save-target-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .save-target-actions button {
+    flex: 1;
+    min-width: 80px;
+    background: rgba(183, 148, 246, 0.12);
+    border: 1px solid rgba(183, 148, 246, 0.3);
+    color: var(--ink);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .save-target-actions button:hover {
+    background: rgba(183, 148, 246, 0.25);
+    border-color: var(--accent-2);
+  }
+  .save-target-hint {
+    font-size: 11px;
+    color: var(--ink-dim);
+    line-height: 1.4;
+  }
+  .toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--accent);
+    color: var(--bg-0);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.25s;
+    z-index: 100;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
   @media (max-width: 540px) {
     .current-time { min-width: 140px; font-size: 11px; }
     .timeline-inner { padding: 10px 12px; gap: 8px; }
@@ -365,6 +496,53 @@
       <span style="margin-left:auto;color:var(--ink-dim);font-size:12px;">Tap any planet for details ↓</span>
     </div>
   </section>
+
+  <section class="save-panel" id="savePanel">
+    <div class="save-panel-header">
+      <h2>Save · Share · Restore</h2>
+      <div class="save-status" id="saveStatus">
+        <span class="dot" id="saveDot"></span>
+        <span id="saveStatusText">Auto-saved locally</span>
+      </div>
+    </div>
+    <div class="save-targets">
+      <div class="save-target">
+        <div class="save-target-head">
+          <span class="save-target-name">📱 This browser</span>
+          <span class="save-target-state" id="localState">Active</span>
+        </div>
+        <div class="save-target-hint">Auto-saves to localStorage as you change inputs. Returns when you reopen the tab.</div>
+        <div class="save-target-actions">
+          <button id="btnClearLocal">Forget</button>
+        </div>
+      </div>
+      <div class="save-target">
+        <div class="save-target-head">
+          <span class="save-target-name">🐙 GitHub Gist</span>
+          <span class="save-target-state idle">Manual</span>
+        </div>
+        <div class="save-target-hint">Download a JSON file. Drop it in a Gist or commit it to a repo. Re-import any time.</div>
+        <div class="save-target-actions">
+          <button id="btnExportJson">Download JSON</button>
+          <button id="btnImportJson">Import…</button>
+        </div>
+      </div>
+      <div class="save-target">
+        <div class="save-target-head">
+          <span class="save-target-name">📂 Google Drive</span>
+          <span class="save-target-state idle">Manual</span>
+        </div>
+        <div class="save-target-hint">Same JSON works for Drive — save the file there, or paste the share link into a Drive doc.</div>
+        <div class="save-target-actions">
+          <button id="btnCopyLink">Copy share link</button>
+          <button id="btnExportJson2">Download JSON</button>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+  </section>
+
+  <div class="toast" id="toast"></div>
 
   <section class="detail-card" id="detailCard">
     <div class="detail-row">
@@ -1001,10 +1179,193 @@ function tick(t) {
 }
 requestAnimationFrame(tick);
 
+// ---------- SAVE / LOAD ----------
+const STORAGE_KEY = 'astro-explorer:v1';
+const saveEls = {
+  status: document.getElementById('saveStatusText'),
+  dot:    document.getElementById('saveDot'),
+  toast:  document.getElementById('toast'),
+};
+
+function snapshot() {
+  return {
+    v: 1,
+    birthDate:    els.birthDate.value,
+    birthTime:    els.birthTime.value,
+    cityIdx:      state.cityIdx,
+    zodiacMode:   state.zodiacMode,
+    scrubberValue: parseFloat(els.scrubber.value),
+    selectedPlanet: state.selectedPlanet,
+    savedAt: Date.now(),
+  };
+}
+
+function applySnapshot(snap, source) {
+  if (!snap || snap.v !== 1) {
+    showToast('Cannot read this save file (wrong version)', true);
+    return false;
+  }
+  els.birthDate.value = snap.birthDate || '2000-01-01';
+  els.birthTime.value = snap.birthTime || '12:00';
+  state.cityIdx = Math.max(0, Math.min(CITIES.length - 1, snap.cityIdx | 0));
+  els.birthPlace.value = String(state.cityIdx);
+  state.zodiacMode = (snap.zodiacMode === 'sidereal') ? 'sidereal' : 'tropical';
+  els.zodiac.value = state.zodiacMode;
+  els.scrubber.value = String(Math.max(-50, Math.min(50, snap.scrubberValue || 0)));
+  state.selectedPlanet = snap.selectedPlanet || null;
+  rebuildBirthDateFromInputs();
+  if (source) markSaved(source);
+  return true;
+}
+
+let saveTimer = null;
+function markDirty() {
+  saveEls.dot.classList.add('dirty');
+  saveEls.status.textContent = 'Saving…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
+      markSaved('local');
+    } catch (e) {
+      saveEls.status.textContent = 'Save failed (storage full?)';
+    }
+  }, 250);
+}
+
+function markSaved(source) {
+  saveEls.dot.classList.remove('dirty');
+  const where = source === 'local' ? 'this browser'
+              : source === 'url'   ? 'shared link'
+              : source === 'file'  ? 'imported file'
+              : 'memory';
+  saveEls.status.textContent = `Saved · ${where} · ${formatTimeAgo(Date.now())}`;
+}
+
+function formatTimeAgo(t) {
+  return new Date(t).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+}
+
+function showToast(msg, isError) {
+  saveEls.toast.textContent = msg;
+  saveEls.toast.style.background = isError ? '#ef4444' : 'var(--accent)';
+  saveEls.toast.style.color = isError ? '#fff' : 'var(--bg-0)';
+  saveEls.toast.classList.add('show');
+  setTimeout(() => saveEls.toast.classList.remove('show'), 2000);
+}
+
+// ----- Share-link (URL hash) -----
+function encodeForUrl(snap) {
+  const json = JSON.stringify(snap);
+  // Encode as URL-safe base64 (works for any browser, no Buffer)
+  const b64 = btoa(unescape(encodeURIComponent(json)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return b64;
+}
+function decodeFromUrl(b64) {
+  try {
+    const padded = b64.replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(escape(atob(padded)));
+    return JSON.parse(json);
+  } catch (e) { return null; }
+}
+
+function buildShareUrl() {
+  const base = location.origin + location.pathname;
+  return `${base}#chart=${encodeForUrl(snapshot())}`;
+}
+
+async function copyShareLink() {
+  const url = buildShareUrl();
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('Share link copied to clipboard');
+  } catch (e) {
+    // Fallback for older browsers / non-secure contexts
+    prompt('Copy this share link:', url);
+  }
+}
+
+// ----- File export/import -----
+function exportJson() {
+  const snap = snapshot();
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0, 10);
+  a.download = `astro-chart-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  showToast('Saved astro-chart-' + stamp + '.json');
+}
+
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const snap = JSON.parse(reader.result);
+      if (applySnapshot(snap, 'file')) showToast('Chart imported');
+    } catch (e) {
+      showToast('Could not parse this file', true);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ----- Wire up buttons -----
+document.getElementById('btnCopyLink').addEventListener('click', copyShareLink);
+document.getElementById('btnExportJson').addEventListener('click', exportJson);
+document.getElementById('btnExportJson2').addEventListener('click', exportJson);
+document.getElementById('btnImportJson').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', (ev) => {
+  const f = ev.target.files[0];
+  if (f) importJson(f);
+  ev.target.value = '';
+});
+document.getElementById('btnClearLocal').addEventListener('click', () => {
+  localStorage.removeItem(STORAGE_KEY);
+  showToast('Local save cleared');
+  saveEls.status.textContent = 'Local save cleared — change anything to save again';
+});
+
+// Listen for changes from any input and mark dirty
+['birthDate','birthTime','birthPlace','zodiac','scrubber'].forEach(id => {
+  const el = els[id] || document.getElementById(id);
+  if (el) el.addEventListener('input', markDirty);
+  if (el) el.addEventListener('change', markDirty);
+});
+document.querySelectorAll('.speed-row button').forEach(b => b.addEventListener('click', markDirty));
+document.querySelectorAll('.quick-row button').forEach(b => b.addEventListener('click', markDirty));
+
 // ---------- BOOT ----------
 els.birthPlace.value = '0';
 state.cityIdx = 0;
-rebuildBirthDateFromInputs();
+
+// 1. Try URL hash first (highest priority — user clicked a share link)
+let booted = false;
+if (location.hash.startsWith('#chart=')) {
+  const snap = decodeFromUrl(location.hash.slice(7));
+  if (snap && applySnapshot(snap, 'url')) {
+    showToast('Loaded chart from share link');
+    booted = true;
+  }
+}
+// 2. Fall back to localStorage
+if (!booted) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const snap = JSON.parse(raw);
+      if (applySnapshot(snap, 'local')) booted = true;
+    }
+  } catch (e) { /* ignore */ }
+}
+// 3. Otherwise just use defaults
+if (!booted) {
+  rebuildBirthDateFromInputs();
+  markSaved('memory');
+}
 </script>
 </body>
 </html>

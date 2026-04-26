@@ -4,6 +4,8 @@ An interactive, free, open-source birth-chart playground. Drag a timeline throug
 
 Built as a free experimentation tool for an astrologer's website. The depth lives with the astrologer; this tool is the hook.
 
+**Live demo:** https://hemantsatishjadhav06-ai.github.io/astro-explorer/
+
 ## What it does
 
 - Renders a birth chart in two languages at once: Western circular wheel + South Indian Kundli
@@ -13,6 +15,18 @@ Built as a free experimentation tool for an astrologer's website. The depth live
 - Snap buttons: jump to **birth**, **today**, **+1 year**, **±10 years**
 - Tap any planet — get its sign, house, degree, and a short interpretation
 - Whole-sign houses, the same system used in classical Vedic astrology
+
+## Save · Share · Restore
+
+Three lightweight ways to keep a chart, all working from the same JSON shape:
+
+| Where           | How it works                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **This browser**| Auto-saves to `localStorage` on every change. Reopens to the same chart next time.                                        |
+| **Share link**  | Encodes the chart into a URL hash. Paste it in chat, email, a Drive doc, a GitHub gist — the recipient sees your chart.  |
+| **JSON file**   | Download `astro-chart-YYYY-MM-DD.json`. Drop it in Google Drive, attach to a GitHub gist, or commit it to a repo. Re-import any time. |
+
+No accounts, no OAuth, no backend — the data is yours and it lives wherever you put the file.
 
 ## Run locally
 

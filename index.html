@@ -929,6 +929,7 @@
       <button id="btnCopyLink"><span class="ico">⎘</span> Share link</button>
       <button id="btnExportJson"><span class="ico">↓</span> Export JSON</button>
       <button id="btnImportJson"><span class="ico">↑</span> Import</button>
+      <button id="btnObsidian"><span class="ico">⬢</span> Send to Obsidian</button>
       <button id="btnClearLocal"><span class="ico">✕</span> Forget</button>
     </div>
     <input type="file" id="importFile" accept="application/json,.json" hidden>
@@ -2306,6 +2307,80 @@ document.getElementById('btnSavePdf').addEventListener('click', () => {
   showToast('Opening print dialog — pick "Save as PDF"');
   setTimeout(() => window.print(), 450);
 });
+
+// --- Obsidian export -------------------------------------------------------
+// Builds a markdown note with chart frontmatter + body, and opens it via the
+// obsidian:// URI. Obsidian launches and creates the note in the chosen vault.
+// If the user has the Advanced URI plugin or just picks a vault, this works
+// universally — no API, no auth, no backend.
+function buildObsidianNote() {
+  const chart = computeChart(state.currentDate);
+  const city = CITIES[state.cityIdx];
+  const dateLabel = state.birthDate.toISOString().slice(0, 10);
+  const lines = [];
+  lines.push('---');
+  lines.push('type: birth-chart');
+  lines.push(`date: ${dateLabel}`);
+  lines.push(`time: ${els.birthTime.value}`);
+  lines.push(`place: "${city[0]}"`);
+  lines.push(`zodiac: ${state.zodiacMode}`);
+  lines.push(`source: "Astro Explorer"`);
+  lines.push(`source_url: "${location.origin + location.pathname}"`);
+  lines.push(`tags: [astrology, kundli, chart]`);
+  lines.push('---');
+  lines.push('');
+  const ascSign = SIGNS[longitudeToSign(chart.ascendant)];
+  lines.push(`# Birth chart · ${dateLabel} · ${city[0]}`);
+  lines.push('');
+  lines.push(`**Lagna (Ascendant):** ${ascSign} · ${(chart.ascendant % 30).toFixed(2)}°`);
+  lines.push('');
+  lines.push('## Planets');
+  lines.push('');
+  lines.push('| Planet | Sign | House | Degree | Nakshatra | Sub Lord |');
+  lines.push('| --- | --- | --- | --- | --- | --- |');
+  for (const p of chart.planets) {
+    const nak = getNakshatra(p.longitude);
+    const sub = getSubLord(p.longitude);
+    lines.push(`| ${p.symbol} ${p.name} | ${p.sign} | H${p.house} | ${p.degreeInSign.toFixed(2)}° | ${nak.name} (pada ${nak.pada}) | ${sub} |`);
+  }
+  lines.push('');
+  lines.push('## Notes');
+  lines.push('');
+  if (els.contextNotes && els.contextNotes.value.trim()) {
+    lines.push('### Context I had in mind');
+    lines.push(els.contextNotes.value.trim());
+    lines.push('');
+  }
+  lines.push(`Captured on ${new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push(`[Open this chart in Astro Explorer](${buildShareUrl()})`);
+  return {
+    name: `Chart · ${dateLabel} · ${city[0]}`,
+    content: lines.join('\n'),
+  };
+}
+
+function sendToObsidian() {
+  const note = buildObsidianNote();
+  // Default to opening "new note" without a fixed vault — Obsidian asks the user
+  // which vault to drop it in. If a default vault is set in their Obsidian
+  // preferences, it goes straight there.
+  const url = 'obsidian://new?'
+    + 'name=' + encodeURIComponent(note.name)
+    + '&content=' + encodeURIComponent(note.content);
+  // Open in a new tab — if Obsidian is installed, the OS hands the URI to it
+  // and the tab silently closes. If it isn't installed, the user sees a prompt.
+  const w = window.open(url, '_blank');
+  if (!w) {
+    // Popup blocked — fall back to inline navigation
+    location.href = url;
+  }
+  showToast('Opening Obsidian — pick a vault to save the note');
+}
+
+document.getElementById('btnObsidian').addEventListener('click', sendToObsidian);
 document.getElementById('btnApplyContext').addEventListener('click', () => {
   refreshRecommendations(computeChart(state.currentDate));
   showToast('Recommendations refreshed from your notes');

@@ -4,27 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Astro Explorer — A quiet birth-chart playground</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23faf3e0'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23c87b5a' stroke-width='1.6'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23c87b5a' stroke-width='0.8' opacity='0.6'/%3E%3Cg stroke='%23c87b5a' stroke-width='1' stroke-linecap='round'%3E%3Cline x1='32' y1='8' x2='32' y2='14'/%3E%3Cline x1='32' y1='50' x2='32' y2='56'/%3E%3Cline x1='8' y1='32' x2='14' y2='32'/%3E%3Cline x1='50' y1='32' x2='56' y2='32'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.5' fill='%23c87b5a'/%3E%3C/svg%3E">
+<meta name="description" content="A quiet, open-source birth-chart playground. Western wheel + North Indian Kundli, time scrubber, KP detail, save and share — all in your browser.">
+<meta name="theme-color" content="#faf3e0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300;1,9..144,500&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap">
 <style>
   :root {
-    /* Parchment / manuscript palette — distinctive, suits Kundli context */
-    --bg-0:    #f6ecd2;        /* warm aged paper */
-    --bg-1:    #efe2c0;        /* slightly deeper parchment */
-    --surface: rgba(60, 35, 15, 0.04);
-    --surface-2: rgba(60, 35, 15, 0.07);
-    --line:    rgba(60, 35, 15, 0.16);
-    --line-2:  rgba(60, 35, 15, 0.30);
-    --ink:     #2a1d10;        /* espresso brown */
-    --ink-2:   #5d4a32;        /* warm umber */
-    --ink-3:   #8b765a;        /* faded ink */
-    --accent:  #b13a1c;        /* manuscript red — saffron-red */
-    --accent-soft: rgba(177, 58, 28, 0.14);
-    --violet:  #4a5d3a;        /* sage forest as secondary */
-    --good:    #4a7050;
-    --warn:    #b56a1a;
-    --bad:     #8b1c1c;
+    /* "Pleasant" pass — softer than the manuscript palette.
+       Reads as morning-sunlight study rather than scholarly austerity. */
+    --bg-0:    #faf3e0;        /* lighter, gentler cream */
+    --bg-1:    #f3e9cf;        /* slightly deeper for depth */
+    --surface: rgba(60, 35, 15, 0.035);
+    --surface-2: rgba(60, 35, 15, 0.06);
+    --line:    rgba(60, 35, 15, 0.13);
+    --line-2:  rgba(60, 35, 15, 0.24);
+    --ink:     #36281c;        /* softer than espresso, warm cocoa */
+    --ink-2:   #6b563d;        /* warm umber */
+    --ink-3:   #9c8568;        /* faded ink */
+    --accent:  #c87b5a;        /* warm terracotta — inviting, not aggressive */
+    --accent-soft: rgba(200, 123, 90, 0.16);
+    --accent-2: #6f8a6c;       /* gentle sage */
+    --violet:  #6f8a6c;        /* legacy alias */
+    --good:    #6a8b6e;
+    --warn:    #c2935b;
+    --bad:     #b56860;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -35,7 +40,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background:
-      radial-gradient(ellipse 800px 600px at 18% -10%, rgba(177, 58, 28, 0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 800px 600px at 18% -10%, rgba(200, 123, 90, 0.08) 0%, transparent 70%),
       radial-gradient(ellipse 700px 500px at 90% 110%, rgba(74, 93, 58, 0.10) 0%, transparent 70%),
       var(--bg-0);
     min-height: 100vh;
@@ -63,7 +68,7 @@
   }
   .stars {
     background-image:
-      radial-gradient(160px 100px at 12% 22%, rgba(177, 58, 28, 0.05), transparent 70%),
+      radial-gradient(160px 100px at 12% 22%, rgba(200, 123, 90, 0.05), transparent 70%),
       radial-gradient(180px 120px at 82% 64%, rgba(139, 118, 90, 0.06), transparent 70%),
       radial-gradient(140px 90px at 38% 86%, rgba(74, 93, 58, 0.04), transparent 70%);
     background-size: 100% 100%;
@@ -101,10 +106,18 @@
   }
   .tagline {
     color: var(--ink-2);
-    margin: 18px auto 0;
+    margin: 0 auto;
     font-size: 15px;
     max-width: 520px;
-    line-height: 1.6;
+    line-height: 1.65;
+  }
+  .hero-flourish {
+    width: 220px;
+    height: 12px;
+    margin: 22px auto 16px;
+    color: var(--accent);
+    opacity: 0.78;
+    display: block;
   }
   main {
     position: relative;
@@ -131,9 +144,9 @@
     gap: 0;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 16px;
+    border-radius: 22px;
     padding: 4px;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
     backdrop-filter: blur(20px);
   }
   .control-group {
@@ -230,7 +243,7 @@
   button.chip.active {
     background: var(--accent-soft);
     color: var(--accent);
-    border-color: rgba(177, 58, 28, 0.35);
+    border-color: rgba(200, 123, 90, 0.35);
     font-weight: 600;
   }
 
@@ -247,8 +260,8 @@
   .chart-card {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 22px 22px 18px;
+    border-radius: 24px;
+    padding: 26px 26px 22px;
     backdrop-filter: blur(20px);
     position: relative;
   }
@@ -470,11 +483,11 @@
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    padding: 10px 14px;
-    margin: 0 0 28px;
+    padding: 12px 18px;
+    margin: 0 0 32px;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 999px;
     backdrop-filter: blur(20px);
   }
   .save-status {
@@ -865,6 +878,13 @@
 <section class="hero">
   <p class="eyebrow">A quiet astrolabe · open source</p>
   <h1>Astro <em>Explorer</em></h1>
+  <svg class="hero-flourish" viewBox="0 0 240 12" aria-hidden="true">
+    <line x1="20" y1="6" x2="105" y2="6" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/>
+    <circle cx="120" cy="6" r="2.6" fill="currentColor"/>
+    <circle cx="112" cy="6" r="0.9" fill="currentColor"/>
+    <circle cx="128" cy="6" r="0.9" fill="currentColor"/>
+    <line x1="135" y1="6" x2="220" y2="6" stroke="currentColor" stroke-width="0.7" stroke-linecap="round"/>
+  </svg>
   <p class="tagline">Drag the timeline. Watch the planets glide across your chart in two languages — a Western wheel and a North Indian Kundli, side by side.</p>
 </section>
 
@@ -1037,21 +1057,22 @@
 'use strict';
 
 // ---------- DATA ----------
-// Planet colors as manuscript inks — saturated enough to read on parchment,
-// each with a distinct tradition-tied hue.
+// Planet colors — softer than the manuscript pass, still readable on cream.
+// Think watercolor on warm paper, not gouache on parchment.
 const PLANETS = [
-  { name: 'Sun',     body: 'Sun',     symbol: '☉', color: '#c8941f', meaning: 'core identity, vitality, the role you came here to play' },
-  { name: 'Moon',    body: 'Moon',    symbol: '☽', color: '#5c5c66', meaning: 'emotions, instincts, what soothes you' },
-  { name: 'Mercury', body: 'Mercury', symbol: '☿', color: '#1c5680', meaning: 'mind, communication, how you think' },
-  { name: 'Venus',   body: 'Venus',   symbol: '♀', color: '#a44a73', meaning: 'love, beauty, what you value' },
-  { name: 'Mars',    body: 'Mars',    symbol: '♂', color: '#8b1c1c', meaning: 'drive, action, how you fight' },
-  { name: 'Jupiter', body: 'Jupiter', symbol: '♃', color: '#a8651a', meaning: 'expansion, luck, your philosophy' },
-  { name: 'Saturn',  body: 'Saturn',  symbol: '♄', color: '#3a2a1a', meaning: 'discipline, limits, the lesson' },
-  { name: 'Rahu',    body: 'Rahu',    symbol: '☊', color: '#3a4666', meaning: 'north node — what you are pulled toward, the unfamiliar territory' },
-  { name: 'Ketu',    body: 'Ketu',    symbol: '☋', color: '#6a3a5a', meaning: 'south node — what you carry from before, what you are releasing' },
+  { name: 'Sun',     body: 'Sun',     symbol: '☉', color: '#d4a043', meaning: 'core identity, vitality, the role you came here to play' },
+  { name: 'Moon',    body: 'Moon',    symbol: '☽', color: '#7d7d8a', meaning: 'emotions, instincts, what soothes you' },
+  { name: 'Mercury', body: 'Mercury', symbol: '☿', color: '#5b8aa8', meaning: 'mind, communication, how you think' },
+  { name: 'Venus',   body: 'Venus',   symbol: '♀', color: '#c08a9c', meaning: 'love, beauty, what you value' },
+  { name: 'Mars',    body: 'Mars',    symbol: '♂', color: '#b85a4a', meaning: 'drive, action, how you fight' },
+  { name: 'Jupiter', body: 'Jupiter', symbol: '♃', color: '#c8884a', meaning: 'expansion, luck, your philosophy' },
+  { name: 'Saturn',  body: 'Saturn',  symbol: '♄', color: '#6a5440', meaning: 'discipline, limits, the lesson' },
+  { name: 'Rahu',    body: 'Rahu',    symbol: '☊', color: '#6878a4', meaning: 'north node — what you are pulled toward, the unfamiliar territory' },
+  { name: 'Ketu',    body: 'Ketu',    symbol: '☋', color: '#9a7794', meaning: 'south node — what you carry from before, what you are releasing' },
 ];
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const SIGNS_DEV = ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुम्भ','मीन'];
 const SIGN_GLYPHS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
 const SIGN_VIBES = [
   'fiery, fast, pioneering',
@@ -1385,12 +1406,13 @@ function placeOnWheel(cx, cy, radius, longitudeFromAsc) {
 // ---------- WESTERN WHEEL ----------
 // Element of each sign (0=fire, 1=earth, 2=air, 3=water) for tinting
 const SIGN_ELEMENT = [0,1,2,3,0,1,2,3,0,1,2,3];
-// Element tints rebalanced for parchment — saturated enough to actually show
+// Element tints — barely-there washes, like watercolor on paper.
+// Subtle enough not to compete with the inscribed sign glyphs.
 const ELEMENT_TINTS = [
-  'rgba(177, 58, 28, 0.08)',   // fire   — manuscript red
-  'rgba(74, 93, 58, 0.10)',    // earth  — sage
-  'rgba(40, 80, 120, 0.08)',   // air    — peacock blue
-  'rgba(106, 58, 90, 0.08)',   // water  — eggplant
+  'rgba(200, 123, 90, 0.05)',   // fire   — soft terracotta wash
+  'rgba(111, 138, 108, 0.06)',  // earth  — sage wash
+  'rgba(91, 138, 168, 0.05)',   // air    — soft sky wash
+  'rgba(154, 119, 148, 0.05)',  // water  — gentle mauve wash
 ];
 
 const ASPECTS = [
@@ -1427,8 +1449,8 @@ function renderWestern(chart) {
   }
 
   // ── Outer ornamental ring
-  svg('circle', { cx, cy, r: R_OUTER + 6, fill: 'none', stroke: 'rgba(177, 58, 28,0.18)', 'stroke-width': 0.6 }, root);
-  svg('circle', { cx, cy, r: R_OUTER, fill: 'none', stroke: 'rgba(177, 58, 28,0.45)', 'stroke-width': 1.2 }, root);
+  svg('circle', { cx, cy, r: R_OUTER + 6, fill: 'none', stroke: 'rgba(200, 123, 90,0.18)', 'stroke-width': 0.6 }, root);
+  svg('circle', { cx, cy, r: R_OUTER, fill: 'none', stroke: 'rgba(200, 123, 90,0.45)', 'stroke-width': 1.2 }, root);
 
   // ── Zodiac ring (sign sectors with element tints)
   const ascSignIdx = longitudeToSign(chart.ascendant);
@@ -1447,18 +1469,26 @@ function renderWestern(chart) {
     const fill = ELEMENT_TINTS[SIGN_ELEMENT[signIdx]];
     svg('path', { d: path, fill, stroke: 'rgba(42, 29, 16, 0.10)' }, root);
 
-    // Sign glyph (centered in sector, larger, refined)
+    // Sign glyph — inscribed-letter feel: warm terracotta on transparent sector
     const mid = pos((R_ZOD_IN + R_ZOD_OUT) / 2, (startLonFromAsc + endLonFromAsc) / 2);
     const t = svg('text', {
-      x: mid.x, y: mid.y,
+      x: mid.x, y: mid.y - 5,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: 'rgba(42, 29, 16, 0.88)',
-      'font-size': 26, 'font-family': "'Fraunces', Georgia, serif", 'font-weight': 400,
+      fill: '#c87b5a',
+      'font-size': 22, 'font-family': "'Fraunces', Georgia, serif", 'font-weight': 400,
     }, root);
     t.textContent = SIGN_GLYPHS[signIdx];
+    // Devanagari name beneath the glyph in faded ink — adds cultural depth
+    const td = svg('text', {
+      x: mid.x, y: mid.y + 12,
+      'text-anchor': 'middle', 'dominant-baseline': 'central',
+      fill: 'rgba(54, 40, 28, 0.55)',
+      'font-size': 9, 'font-family': "'Fraunces', 'Noto Sans Devanagari', serif",
+    }, root);
+    td.textContent = SIGNS_DEV[signIdx];
   }
-  svg('circle', { cx, cy, r: R_ZOD_OUT, fill: 'none', stroke: 'rgba(177, 58, 28,0.25)', 'stroke-width': 0.5 }, root);
-  svg('circle', { cx, cy, r: R_ZOD_IN, fill: 'none', stroke: 'rgba(177, 58, 28,0.18)', 'stroke-width': 0.4 }, root);
+  svg('circle', { cx, cy, r: R_ZOD_OUT, fill: 'none', stroke: 'rgba(200, 123, 90,0.25)', 'stroke-width': 0.5 }, root);
+  svg('circle', { cx, cy, r: R_ZOD_IN, fill: 'none', stroke: 'rgba(200, 123, 90,0.18)', 'stroke-width': 0.4 }, root);
 
   // ── Degree ticks (1° / 5° / 10° / 30°)
   for (let deg = 0; deg < 360; deg++) {
@@ -1472,7 +1502,7 @@ function renderWestern(chart) {
     const b = pos(R_ZOD_IN - tickLen, lonFromAsc);
     svg('line', {
       x1: a.x, y1: a.y, x2: b.x, y2: b.y,
-      stroke: `rgba(177, 58, 28,${opacity})`,
+      stroke: `rgba(200, 123, 90,${opacity})`,
       'stroke-width': isMajor ? 1.2 : 0.5,
     }, root);
   }
@@ -1489,7 +1519,7 @@ function renderWestern(chart) {
     const b = pos(R_DEG_IN, lonFromAsc);
     svg('line', {
       x1: a.x, y1: a.y, x2: b.x, y2: b.y,
-      stroke: isAngular ? 'rgba(177, 58, 28,0.55)' : 'rgba(42, 29, 16, 0.16)',
+      stroke: isAngular ? 'rgba(200, 123, 90,0.55)' : 'rgba(42, 29, 16, 0.16)',
       'stroke-width': isAngular ? 1.2 : 0.5,
       'stroke-dasharray': isAngular ? 'none' : '2 3',
     }, root);
@@ -1499,7 +1529,7 @@ function renderWestern(chart) {
     const lbl = svg('text', {
       x: labelPos.x, y: labelPos.y,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: isAngular ? 'rgba(177, 58, 28,0.85)' : 'rgba(42, 29, 16, 0.50)',
+      fill: isAngular ? 'rgba(200, 123, 90,0.85)' : 'rgba(42, 29, 16, 0.50)',
       'font-size': 11.5, 'font-family': "'Spectral', Georgia, serif",
       'font-weight': isAngular ? 600 : 400,
     }, root);
@@ -1519,7 +1549,7 @@ function renderWestern(chart) {
     const t = svg('text', {
       x: tip.x, y: tip.y,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: '#b13a1c',
+      fill: '#c87b5a',
       'font-size': 10.5, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 600,
       'letter-spacing': '0.18em',
     }, root);
@@ -1528,7 +1558,7 @@ function renderWestern(chart) {
     // Small tick on the outer rim
     const t1 = pos(R_OUTER, lonFromAsc);
     const t2 = pos(R_OUTER + 6, lonFromAsc);
-    svg('line', { x1: t1.x, y1: t1.y, x2: t2.x, y2: t2.y, stroke: '#b13a1c', 'stroke-width': 1.2 }, root);
+    svg('line', { x1: t1.x, y1: t1.y, x2: t2.x, y2: t2.y, stroke: '#c87b5a', 'stroke-width': 1.2 }, root);
   });
 
   // ── Aspect lines (Western only — graha drishti for sidereal is a different system)
@@ -1557,7 +1587,7 @@ function renderWestern(chart) {
   }
 
   // ── Inner rim
-  svg('circle', { cx, cy, r: R_INNER_RIM, fill: 'none', stroke: 'rgba(177, 58, 28,0.22)', 'stroke-width': 0.5 }, root);
+  svg('circle', { cx, cy, r: R_INNER_RIM, fill: 'none', stroke: 'rgba(200, 123, 90,0.22)', 'stroke-width': 0.5 }, root);
 
   // ── Planets — stack radially when clustered
   const grouped = groupPlanetsByCloseness(chart.planets);
@@ -1604,8 +1634,8 @@ function renderWestern(chart) {
   });
 
   // ── Center medallion (mandala-ish)
-  svg('circle', { cx, cy, r: R_INNER_RIM - 4, fill: 'url(#centerGrad)', stroke: 'rgba(177, 58, 28,0.18)', 'stroke-width': 0.4 }, root);
-  svg('circle', { cx, cy, r: R_CENTER, fill: 'rgba(60, 35, 15, 0.06)', stroke: 'rgba(177, 58, 28, 0.5)', 'stroke-width': 0.8 }, root);
+  svg('circle', { cx, cy, r: R_INNER_RIM - 4, fill: 'url(#centerGrad)', stroke: 'rgba(200, 123, 90,0.18)', 'stroke-width': 0.4 }, root);
+  svg('circle', { cx, cy, r: R_CENTER, fill: 'rgba(60, 35, 15, 0.06)', stroke: 'rgba(200, 123, 90, 0.5)', 'stroke-width': 0.8 }, root);
   // 12-petal radial pattern
   for (let i = 0; i < 12; i++) {
     const a = (i * 30) * Math.PI / 180;
@@ -1614,12 +1644,12 @@ function renderWestern(chart) {
     svg('line', {
       x1: cx + Math.cos(a) * inner, y1: cy - Math.sin(a) * inner,
       x2: cx + Math.cos(a) * outer, y2: cy - Math.sin(a) * outer,
-      stroke: 'rgba(177, 58, 28,0.10)', 'stroke-width': 0.4,
+      stroke: 'rgba(200, 123, 90,0.10)', 'stroke-width': 0.4,
     }, root);
   }
   // Center sun glyph
-  svg('circle', { cx, cy, r: 4, fill: 'none', stroke: 'rgba(177, 58, 28,0.7)', 'stroke-width': 0.8 }, root);
-  svg('circle', { cx, cy, r: 1.4, fill: 'rgba(177, 58, 28,0.85)' }, root);
+  svg('circle', { cx, cy, r: 4, fill: 'none', stroke: 'rgba(200, 123, 90,0.7)', 'stroke-width': 0.8 }, root);
+  svg('circle', { cx, cy, r: 1.4, fill: 'rgba(200, 123, 90,0.85)' }, root);
 }
 
 // Cluster planets that are within ~7° so we can stack them radially
@@ -1741,7 +1771,7 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
   // Background frame
   svg('rect', {
     x: PAD - 6, y: PAD - 6, width: SIZE + 12, height: SIZE + 12,
-    fill: 'transparent', stroke: 'rgba(177, 58, 28,0.14)', 'stroke-width': 0.6, rx: 4,
+    fill: 'transparent', stroke: 'rgba(200, 123, 90,0.14)', 'stroke-width': 0.6, rx: 4,
   }, root);
 
   // The 12 zones
@@ -1755,28 +1785,35 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
     // Polygon
     svg('polygon', {
       points, fill,
-      stroke: 'rgba(177, 58, 28,0.55)',
+      stroke: 'rgba(200, 123, 90,0.55)',
       'stroke-width': 1.0,
       'stroke-linejoin': 'round',
     }, root);
 
-    // Sign label
+    // Sign label — Devanagari first (cultural primary), Latin glyph as small caption
     const [sx, sy] = nicSignAnchor(houseNum, SIZE);
-    const sg = svg('text', {
-      x: sx + PAD, y: sy + PAD,
+    const dev = svg('text', {
+      x: sx + PAD, y: sy + PAD - 4,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: 'rgba(42, 29, 16, 0.58)',
-      'font-size': 11, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 500,
-      'letter-spacing': '0.06em',
+      fill: 'rgba(54, 40, 28, 0.72)',
+      'font-size': 12, 'font-family': "'Fraunces', 'Noto Sans Devanagari', serif", 'font-weight': 500,
     }, root);
-    sg.textContent = SIGN_GLYPHS[signIdx] + ' ' + (signIdx + 1);
+    dev.textContent = SIGNS_DEV[signIdx];
+    const sg = svg('text', {
+      x: sx + PAD, y: sy + PAD + 9,
+      'text-anchor': 'middle', 'dominant-baseline': 'central',
+      fill: 'rgba(54, 40, 28, 0.45)',
+      'font-size': 9, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 500,
+      'letter-spacing': '0.08em',
+    }, root);
+    sg.textContent = SIGN_GLYPHS[signIdx] + '  ' + SIGNS[signIdx].slice(0, 3).toUpperCase();
 
     // House number — small, in the centroid
     const [cxp, cyp] = polyCentroid(poly);
     const hn = svg('text', {
       x: cxp + PAD, y: cyp + PAD - 14,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: i === 0 ? 'rgba(177, 58, 28,0.75)' : 'rgba(42, 29, 16, 0.42)',
+      fill: i === 0 ? 'rgba(200, 123, 90,0.75)' : 'rgba(42, 29, 16, 0.42)',
       'font-size': 10, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 500,
       'letter-spacing': '0.1em',
     }, root);

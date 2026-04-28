@@ -4,62 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Astro Explorer — A quiet birth-chart playground</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23faf3e0'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23c87b5a' stroke-width='1.6'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23c87b5a' stroke-width='0.8' opacity='0.6'/%3E%3Cg stroke='%23c87b5a' stroke-width='1' stroke-linecap='round'%3E%3Cline x1='32' y1='8' x2='32' y2='14'/%3E%3Cline x1='32' y1='50' x2='32' y2='56'/%3E%3Cline x1='8' y1='32' x2='14' y2='32'/%3E%3Cline x1='50' y1='32' x2='56' y2='32'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.5' fill='%23c87b5a'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0d11'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23ff7849' stroke-width='1.6'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23ff7849' stroke-width='0.8' opacity='0.6'/%3E%3Cg stroke='%23ff7849' stroke-width='1' stroke-linecap='round'%3E%3Cline x1='32' y1='8' x2='32' y2='14'/%3E%3Cline x1='32' y1='50' x2='32' y2='56'/%3E%3Cline x1='8' y1='32' x2='14' y2='32'/%3E%3Cline x1='50' y1='32' x2='56' y2='32'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='3.5' fill='%23ff7849'/%3E%3C/svg%3E">
 <meta name="description" content="A quiet, open-source birth-chart playground. Western wheel + North Indian Kundli, time scrubber, KP detail, save and share — all in your browser.">
-<meta name="theme-color" content="#faf3e0">
+<meta name="theme-color" content="#0c0d11">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300;1,9..144,500&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;700&display=swap">
 <style>
   :root {
-    /* "Pleasant" pass — softer than the manuscript palette.
-       Reads as morning-sunlight study rather than scholarly austerity. */
-    --bg-0:    #faf3e0;        /* lighter, gentler cream */
-    --bg-1:    #f3e9cf;        /* slightly deeper for depth */
-    --surface: rgba(60, 35, 15, 0.035);
-    --surface-2: rgba(60, 35, 15, 0.06);
-    --line:    rgba(60, 35, 15, 0.13);
-    --line-2:  rgba(60, 35, 15, 0.24);
-    --ink:     #36281c;        /* softer than espresso, warm cocoa */
-    --ink-2:   #6b563d;        /* warm umber */
-    --ink-3:   #9c8568;        /* faded ink */
-    --accent:  #c87b5a;        /* warm terracotta — inviting, not aggressive */
-    --accent-soft: rgba(200, 123, 90, 0.16);
-    --accent-2: #6f8a6c;       /* gentle sage */
-    --violet:  #6f8a6c;        /* legacy alias */
-    --good:    #6a8b6e;
-    --warn:    #c2935b;
-    --bad:     #b56860;
+    /* Bold modern dark — deep ink-black bg, off-white type, vivid coral accent.
+       Confident, alive, contemporary. Not academic, not parchment. */
+    --bg-0:    #0c0d11;        /* deep near-black with cool undertone */
+    --bg-1:    #14161c;
+    --surface: rgba(255, 255, 255, 0.04);
+    --surface-2: rgba(255, 255, 255, 0.07);
+    --line:    rgba(255, 255, 255, 0.10);
+    --line-2:  rgba(255, 255, 255, 0.20);
+    --ink:     #f4f3ee;        /* off-white, slightly warm */
+    --ink-2:   #b4b2a6;
+    --ink-3:   #6e6c62;
+    --accent:  #ff7849;        /* bold coral-orange — bright, alive */
+    --accent-soft: rgba(255, 120, 73, 0.16);
+    --accent-2: #6da6ff;       /* electric blue secondary */
+    --violet:  #6da6ff;        /* legacy alias */
+    --good:    #4ade80;
+    --warn:    #fbbf24;
+    --bad:     #f87171;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: 'Spectral', Georgia, 'Times New Roman', serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     color: var(--ink);
+    font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background:
-      radial-gradient(ellipse 800px 600px at 18% -10%, rgba(200, 123, 90, 0.08) 0%, transparent 70%),
-      radial-gradient(ellipse 700px 500px at 90% 110%, rgba(74, 93, 58, 0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 900px 700px at 12% -8%, rgba(255, 120, 73, 0.10) 0%, transparent 65%),
+      radial-gradient(ellipse 800px 600px at 92% 105%, rgba(109, 166, 255, 0.08) 0%, transparent 65%),
       var(--bg-0);
     min-height: 100vh;
     overflow-x: hidden;
-    line-height: 1.65;
-    font-weight: 400;
+    line-height: 1.55;
+    font-weight: 500;
+    letter-spacing: -0.005em;
   }
-  /* Parchment grain — warm fibre texture instead of cosmic stars */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='paper'><feTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.11  0 0 0 0 0.06  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.4'/></svg>");
-    opacity: 0.30;
-    mix-blend-mode: multiply;
-  }
-  /* Faint foxing marks — aged-paper character */
+  body::after { display: none; }
   .stars, .stars-2 {
     position: fixed;
     inset: 0;
@@ -68,10 +59,14 @@
   }
   .stars {
     background-image:
-      radial-gradient(160px 100px at 12% 22%, rgba(200, 123, 90, 0.05), transparent 70%),
-      radial-gradient(180px 120px at 82% 64%, rgba(139, 118, 90, 0.06), transparent 70%),
-      radial-gradient(140px 90px at 38% 86%, rgba(74, 93, 58, 0.04), transparent 70%);
+      radial-gradient(1.4px 1.4px at 18% 24%, rgba(255,255,255,0.6), transparent 60%),
+      radial-gradient(1px 1px at 32% 78%, rgba(255,255,255,0.4), transparent 60%),
+      radial-gradient(1.6px 1.6px at 52% 41%, rgba(255,255,255,0.7), transparent 60%),
+      radial-gradient(1px 1px at 68% 16%, rgba(255,255,255,0.4), transparent 60%),
+      radial-gradient(1.2px 1.2px at 82% 64%, rgba(255,255,255,0.5), transparent 60%),
+      radial-gradient(1.3px 1.3px at 91% 28%, rgba(255,255,255,0.55), transparent 60%);
     background-size: 100% 100%;
+    opacity: 0.45;
   }
   .stars-2 { display: none; }
 
@@ -84,32 +79,34 @@
   }
   .eyebrow {
     font-size: 11px;
-    letter-spacing: 0.32em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: var(--ink-3);
-    margin: 0 0 14px;
-    font-weight: 500;
+    color: var(--accent);
+    margin: 0 0 16px;
+    font-weight: 700;
   }
   h1 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: clamp(40px, 7vw, 76px);
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 800;
+    font-size: clamp(48px, 8.5vw, 96px);
     margin: 0;
-    letter-spacing: -0.02em;
-    line-height: 1;
+    letter-spacing: -0.045em;
+    line-height: 0.92;
     color: var(--ink);
   }
   h1 em {
-    font-style: italic;
+    font-style: normal;
     color: var(--accent);
+    font-weight: 800;
   }
   .tagline {
     color: var(--ink-2);
     margin: 0 auto;
-    font-size: 15px;
-    max-width: 520px;
-    line-height: 1.65;
+    font-size: 17px;
+    max-width: 560px;
+    line-height: 1.55;
+    font-weight: 500;
   }
   .hero-flourish {
     width: 220px;
@@ -158,13 +155,13 @@
     transition: background 0.2s;
   }
   .control-group:last-child { border-right: none; }
-  .control-group:hover { background: rgba(60, 35, 15, 0.025); }
+  .control-group:hover { background: rgba(255, 255, 255, 0.025); }
   .control-group label {
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--ink-3);
-    font-weight: 500;
+    font-weight: 700;
   }
   .control-group input,
   .control-group select {
@@ -172,9 +169,10 @@
     border: none;
     color: var(--ink);
     padding: 2px 0;
-    font-size: 15px;
+    font-size: 16px;
     font-family: inherit;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   .control-group input:focus,
   .control-group select:focus {
@@ -218,14 +216,14 @@
     background: transparent;
     border: 1px solid var(--line);
     color: var(--ink-2);
-    padding: 7px 14px;
+    padding: 8px 16px;
     border-radius: 999px;
-    font-size: 12.5px;
+    font-size: 13px;
     cursor: pointer;
     font-family: inherit;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.18s ease;
-    letter-spacing: 0.01em;
+    letter-spacing: -0.005em;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -243,7 +241,7 @@
   button.chip.active {
     background: var(--accent-soft);
     color: var(--accent);
-    border-color: rgba(200, 123, 90, 0.35);
+    border-color: rgba(255, 120, 73, 0.35);
     font-weight: 600;
   }
 
@@ -267,11 +265,10 @@
   }
   .chart-card h2 {
     margin: 0 0 4px;
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 22px;
-    letter-spacing: -0.01em;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.025em;
     color: var(--ink);
   }
   .chart-card .chart-sub {
@@ -286,7 +283,7 @@
     width: 100%;
     height: auto;
     display: block;
-    filter: drop-shadow(0 8px 16px rgba(60, 35, 15, 0.15));
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.5));
   }
   .planet {
     cursor: pointer;
@@ -322,13 +319,13 @@
     font-weight: 200;
   }
   .detail-card .detail-title {
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 28px;
-    letter-spacing: -0.01em;
-    margin: 0 0 4px;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    letter-spacing: -0.03em;
+    margin: 0 0 6px;
     color: var(--ink);
+    line-height: 1.1;
   }
   .detail-card .detail-meta {
     color: var(--ink-3);
@@ -366,7 +363,7 @@
     right: 0;
     padding: 18px 20px 18px;
     z-index: 30;
-    background: linear-gradient(180deg, transparent, rgba(246, 236, 210, 0.85) 35%, var(--bg-0));
+    background: linear-gradient(180deg, transparent, rgba(12, 13, 17, 0.85) 35%, var(--bg-0));
     pointer-events: none;
   }
   .timeline-inner {
@@ -376,13 +373,13 @@
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
-    background: rgba(239, 226, 192, 0.92);
-    border: 1px solid var(--line-2);
-    border-radius: 16px;
+    background: rgba(20, 22, 28, 0.88);
+    border: 1px solid var(--line);
+    border-radius: 18px;
     padding: 14px 18px;
     backdrop-filter: blur(24px);
     pointer-events: auto;
-    box-shadow: 0 12px 32px rgba(60, 35, 15, 0.18);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
   }
   .play-btn {
     background: var(--ink);
@@ -409,7 +406,7 @@
     -webkit-appearance: none;
     appearance: none;
     height: 2px;
-    background: rgba(60, 35, 15, 0.18);
+    background: rgba(255, 255, 255, 0.18);
     border-radius: 2px;
     outline: none;
     cursor: grab;
@@ -566,11 +563,12 @@
   /* Variants header */
   .variants-header { margin: 56px 0 20px; }
   .variants-title {
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic; font-weight: 300;
-    font-size: clamp(28px, 4vw, 40px);
-    margin: 6px 0 8px; color: var(--ink);
-    letter-spacing: -0.01em;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: clamp(34px, 5vw, 52px);
+    margin: 8px 0 10px; color: var(--ink);
+    letter-spacing: -0.035em;
+    line-height: 1.05;
   }
   .variants-sub {
     color: var(--ink-2); font-size: 14px; margin: 0; max-width: 60ch;
@@ -588,9 +586,10 @@
   }
   .chart-card--small h3 {
     margin: 0 0 2px;
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic; font-weight: 300;
-    font-size: 17px;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.02em;
     color: var(--ink);
   }
   .chart-card--small svg {
@@ -604,9 +603,11 @@
   }
   .chart-card--table h3 {
     margin: 0 0 2px;
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic; font-weight: 300;
-    font-size: 17px; color: var(--ink);
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
   }
   /* KP detail table is content-heavy — span wider when grid has room */
   @media (min-width: 940px) {
@@ -643,14 +644,14 @@
   }
   .data-table td {
     padding: 8px 6px;
-    border-bottom: 1px solid rgba(60, 35, 15, 0.07);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     color: var(--ink-2);
   }
   .data-table td.cell-name {
     color: var(--ink);
     font-weight: 500;
   }
-  .data-table tr:hover { background: rgba(60, 35, 15, 0.04); }
+  .data-table tr:hover { background: rgba(255, 255, 255, 0.04); }
   .data-table tr.asc td { color: var(--accent); }
   .data-table tr.asc td.cell-name {
     color: var(--accent);
@@ -691,13 +692,12 @@
     margin-top: 2px;
   }
   .rec-title {
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 17px;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
     color: var(--ink);
-    margin: 0 0 4px;
-    letter-spacing: -0.005em;
+    margin: 0 0 5px;
+    letter-spacing: -0.02em;
   }
   .rec-body {
     color: var(--ink-2);
@@ -717,11 +717,11 @@
   }
   .rec-context h4 {
     margin: 0;
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
     font-size: 18px;
     color: var(--ink);
+    letter-spacing: -0.02em;
   }
   .rec-hint {
     color: var(--ink-3);
@@ -760,14 +760,14 @@
     backdrop-filter: blur(20px);
   }
   .cta-title {
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: clamp(24px, 3.4vw, 34px);
-    margin: 8px 0 8px;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4.2vw, 44px);
+    margin: 10px 0 12px;
     color: var(--ink);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.035em;
     max-width: 22ch;
+    line-height: 1.05;
   }
   .cta-body {
     color: var(--ink-2);
@@ -1057,18 +1057,17 @@
 'use strict';
 
 // ---------- DATA ----------
-// Planet colors — softer than the manuscript pass, still readable on cream.
-// Think watercolor on warm paper, not gouache on parchment.
+// Planet colors — bright neon-pop glowing on the dark bg. Bold, alive.
 const PLANETS = [
-  { name: 'Sun',     body: 'Sun',     symbol: '☉', color: '#d4a043', meaning: 'core identity, vitality, the role you came here to play' },
-  { name: 'Moon',    body: 'Moon',    symbol: '☽', color: '#7d7d8a', meaning: 'emotions, instincts, what soothes you' },
-  { name: 'Mercury', body: 'Mercury', symbol: '☿', color: '#5b8aa8', meaning: 'mind, communication, how you think' },
-  { name: 'Venus',   body: 'Venus',   symbol: '♀', color: '#c08a9c', meaning: 'love, beauty, what you value' },
-  { name: 'Mars',    body: 'Mars',    symbol: '♂', color: '#b85a4a', meaning: 'drive, action, how you fight' },
-  { name: 'Jupiter', body: 'Jupiter', symbol: '♃', color: '#c8884a', meaning: 'expansion, luck, your philosophy' },
-  { name: 'Saturn',  body: 'Saturn',  symbol: '♄', color: '#6a5440', meaning: 'discipline, limits, the lesson' },
-  { name: 'Rahu',    body: 'Rahu',    symbol: '☊', color: '#6878a4', meaning: 'north node — what you are pulled toward, the unfamiliar territory' },
-  { name: 'Ketu',    body: 'Ketu',    symbol: '☋', color: '#9a7794', meaning: 'south node — what you carry from before, what you are releasing' },
+  { name: 'Sun',     body: 'Sun',     symbol: '☉', color: '#ffb84d', meaning: 'core identity, vitality, the role you came here to play' },
+  { name: 'Moon',    body: 'Moon',    symbol: '☽', color: '#e6e6f0', meaning: 'emotions, instincts, what soothes you' },
+  { name: 'Mercury', body: 'Mercury', symbol: '☿', color: '#7cc4ff', meaning: 'mind, communication, how you think' },
+  { name: 'Venus',   body: 'Venus',   symbol: '♀', color: '#ff9ec0', meaning: 'love, beauty, what you value' },
+  { name: 'Mars',    body: 'Mars',    symbol: '♂', color: '#ff5e57', meaning: 'drive, action, how you fight' },
+  { name: 'Jupiter', body: 'Jupiter', symbol: '♃', color: '#ffc56b', meaning: 'expansion, luck, your philosophy' },
+  { name: 'Saturn',  body: 'Saturn',  symbol: '♄', color: '#a8a094', meaning: 'discipline, limits, the lesson' },
+  { name: 'Rahu',    body: 'Rahu',    symbol: '☊', color: '#6da6ff', meaning: 'north node — what you are pulled toward, the unfamiliar territory' },
+  { name: 'Ketu',    body: 'Ketu',    symbol: '☋', color: '#c79bff', meaning: 'south node — what you carry from before, what you are releasing' },
 ];
 
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -1406,20 +1405,19 @@ function placeOnWheel(cx, cy, radius, longitudeFromAsc) {
 // ---------- WESTERN WHEEL ----------
 // Element of each sign (0=fire, 1=earth, 2=air, 3=water) for tinting
 const SIGN_ELEMENT = [0,1,2,3,0,1,2,3,0,1,2,3];
-// Element tints — barely-there washes, like watercolor on paper.
-// Subtle enough not to compete with the inscribed sign glyphs.
+// Element tints on dark — vivid washes that hint at the element without yelling
 const ELEMENT_TINTS = [
-  'rgba(200, 123, 90, 0.05)',   // fire   — soft terracotta wash
-  'rgba(111, 138, 108, 0.06)',  // earth  — sage wash
-  'rgba(91, 138, 168, 0.05)',   // air    — soft sky wash
-  'rgba(154, 119, 148, 0.05)',  // water  — gentle mauve wash
+  'rgba(255, 120, 73, 0.10)',   // fire   — coral
+  'rgba(132, 204, 122, 0.08)',  // earth  — sage
+  'rgba(124, 196, 255, 0.08)',  // air    — sky
+  'rgba(199, 155, 255, 0.09)',  // water  — lavender
 ];
 
 const ASPECTS = [
-  { angle: 60,  orb: 5, color: 'rgba(40, 80, 120, 0.45)',   name: 'sextile' },
-  { angle: 90,  orb: 5, color: 'rgba(139, 28, 28, 0.50)',   name: 'square' },
-  { angle: 120, orb: 5, color: 'rgba(74, 93, 58, 0.55)',    name: 'trine' },
-  { angle: 180, orb: 5, color: 'rgba(106, 58, 90, 0.50)',   name: 'opposition' },
+  { angle: 60,  orb: 5, color: 'rgba(124, 196, 255, 0.45)', name: 'sextile' },
+  { angle: 90,  orb: 5, color: 'rgba(255, 94, 87, 0.55)',   name: 'square' },
+  { angle: 120, orb: 5, color: 'rgba(132, 204, 122, 0.50)', name: 'trine' },
+  { angle: 180, orb: 5, color: 'rgba(199, 155, 255, 0.50)', name: 'opposition' },
 ];
 
 function renderWestern(chart) {
@@ -1440,8 +1438,8 @@ function renderWestern(chart) {
   // ── Defs: gradient for the center medallion
   const defs = svg('defs', {}, root);
   const grad = svg('radialGradient', { id: 'centerGrad', cx: '50%', cy: '50%', r: '60%' }, defs);
-  svg('stop', { offset: '0%', 'stop-color': '#efe2c0', 'stop-opacity': 0.95 }, grad);
-  svg('stop', { offset: '100%', 'stop-color': '#dcc999', 'stop-opacity': 1 }, grad);
+  svg('stop', { offset: '0%', 'stop-color': '#1d1f27', 'stop-opacity': 0.95 }, grad);
+  svg('stop', { offset: '100%', 'stop-color': '#0c0d11', 'stop-opacity': 1 }, grad);
 
   function pos(r, lonFromAsc) {
     const a = toRad(180 + lonFromAsc);
@@ -1449,8 +1447,8 @@ function renderWestern(chart) {
   }
 
   // ── Outer ornamental ring
-  svg('circle', { cx, cy, r: R_OUTER + 6, fill: 'none', stroke: 'rgba(200, 123, 90,0.18)', 'stroke-width': 0.6 }, root);
-  svg('circle', { cx, cy, r: R_OUTER, fill: 'none', stroke: 'rgba(200, 123, 90,0.45)', 'stroke-width': 1.2 }, root);
+  svg('circle', { cx, cy, r: R_OUTER + 6, fill: 'none', stroke: 'rgba(255, 120, 73,0.18)', 'stroke-width': 0.6 }, root);
+  svg('circle', { cx, cy, r: R_OUTER, fill: 'none', stroke: 'rgba(255, 120, 73,0.45)', 'stroke-width': 1.2 }, root);
 
   // ── Zodiac ring (sign sectors with element tints)
   const ascSignIdx = longitudeToSign(chart.ascendant);
@@ -1467,28 +1465,28 @@ function renderWestern(chart) {
     const path = `M ${x1} ${y1} L ${x2} ${y2} A ${R_ZOD_OUT} ${R_ZOD_OUT} 0 0 0 ${x3} ${y3} L ${x4} ${y4} A ${R_ZOD_IN} ${R_ZOD_IN} 0 0 1 ${x1} ${y1} Z`;
     const signIdx = (ascSignIdx + i) % 12;
     const fill = ELEMENT_TINTS[SIGN_ELEMENT[signIdx]];
-    svg('path', { d: path, fill, stroke: 'rgba(42, 29, 16, 0.10)' }, root);
+    svg('path', { d: path, fill, stroke: 'rgba(244, 243, 238, 0.10)' }, root);
 
     // Sign glyph — inscribed-letter feel: warm terracotta on transparent sector
     const mid = pos((R_ZOD_IN + R_ZOD_OUT) / 2, (startLonFromAsc + endLonFromAsc) / 2);
     const t = svg('text', {
       x: mid.x, y: mid.y - 5,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: '#c87b5a',
-      'font-size': 22, 'font-family': "'Fraunces', Georgia, serif", 'font-weight': 400,
+      fill: '#ff7849',
+      'font-size': 22, 'font-family': "'Bricolage Grotesque', 'Inter', sans-serif", 'font-weight': 800,
     }, root);
     t.textContent = SIGN_GLYPHS[signIdx];
     // Devanagari name beneath the glyph in faded ink — adds cultural depth
     const td = svg('text', {
       x: mid.x, y: mid.y + 12,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: 'rgba(54, 40, 28, 0.55)',
-      'font-size': 9, 'font-family': "'Fraunces', 'Noto Sans Devanagari', serif",
+      fill: 'rgba(244, 243, 238, 0.55)',
+      'font-size': 9, 'font-family': "'Noto Sans Devanagari', 'Inter', sans-serif",
     }, root);
     td.textContent = SIGNS_DEV[signIdx];
   }
-  svg('circle', { cx, cy, r: R_ZOD_OUT, fill: 'none', stroke: 'rgba(200, 123, 90,0.25)', 'stroke-width': 0.5 }, root);
-  svg('circle', { cx, cy, r: R_ZOD_IN, fill: 'none', stroke: 'rgba(200, 123, 90,0.18)', 'stroke-width': 0.4 }, root);
+  svg('circle', { cx, cy, r: R_ZOD_OUT, fill: 'none', stroke: 'rgba(255, 120, 73,0.25)', 'stroke-width': 0.5 }, root);
+  svg('circle', { cx, cy, r: R_ZOD_IN, fill: 'none', stroke: 'rgba(255, 120, 73,0.18)', 'stroke-width': 0.4 }, root);
 
   // ── Degree ticks (1° / 5° / 10° / 30°)
   for (let deg = 0; deg < 360; deg++) {
@@ -1502,14 +1500,14 @@ function renderWestern(chart) {
     const b = pos(R_ZOD_IN - tickLen, lonFromAsc);
     svg('line', {
       x1: a.x, y1: a.y, x2: b.x, y2: b.y,
-      stroke: `rgba(200, 123, 90,${opacity})`,
+      stroke: `rgba(255, 120, 73,${opacity})`,
       'stroke-width': isMajor ? 1.2 : 0.5,
     }, root);
   }
 
   // ── House ring background
-  svg('circle', { cx, cy, r: R_HOUSE_OUT, fill: 'rgba(42, 29, 16, 0.025)', stroke: 'rgba(42, 29, 16, 0.12)', 'stroke-width': 0.5 }, root);
-  svg('circle', { cx, cy, r: R_HOUSE_IN, fill: 'none', stroke: 'rgba(42, 29, 16, 0.12)', 'stroke-width': 0.5 }, root);
+  svg('circle', { cx, cy, r: R_HOUSE_OUT, fill: 'rgba(244, 243, 238, 0.025)', stroke: 'rgba(244, 243, 238, 0.12)', 'stroke-width': 0.5 }, root);
+  svg('circle', { cx, cy, r: R_HOUSE_IN, fill: 'none', stroke: 'rgba(244, 243, 238, 0.12)', 'stroke-width': 0.5 }, root);
 
   // ── House cusp lines (whole-sign: every 30° from ASC)
   for (let h = 0; h < 12; h++) {
@@ -1519,7 +1517,7 @@ function renderWestern(chart) {
     const b = pos(R_DEG_IN, lonFromAsc);
     svg('line', {
       x1: a.x, y1: a.y, x2: b.x, y2: b.y,
-      stroke: isAngular ? 'rgba(200, 123, 90,0.55)' : 'rgba(42, 29, 16, 0.16)',
+      stroke: isAngular ? 'rgba(255, 120, 73,0.55)' : 'rgba(244, 243, 238, 0.16)',
       'stroke-width': isAngular ? 1.2 : 0.5,
       'stroke-dasharray': isAngular ? 'none' : '2 3',
     }, root);
@@ -1529,8 +1527,8 @@ function renderWestern(chart) {
     const lbl = svg('text', {
       x: labelPos.x, y: labelPos.y,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: isAngular ? 'rgba(200, 123, 90,0.85)' : 'rgba(42, 29, 16, 0.50)',
-      'font-size': 11.5, 'font-family': "'Spectral', Georgia, serif",
+      fill: isAngular ? 'rgba(255, 120, 73,0.85)' : 'rgba(244, 243, 238, 0.50)',
+      'font-size': 11.5, 'font-family': "'Inter', sans-serif",
       'font-weight': isAngular ? 600 : 400,
     }, root);
     lbl.textContent = h + 1;
@@ -1549,8 +1547,8 @@ function renderWestern(chart) {
     const t = svg('text', {
       x: tip.x, y: tip.y,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: '#c87b5a',
-      'font-size': 10.5, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 600,
+      fill: '#ff7849',
+      'font-size': 10.5, 'font-family': "'Inter', sans-serif", 'font-weight': 600,
       'letter-spacing': '0.18em',
     }, root);
     t.textContent = label;
@@ -1558,7 +1556,7 @@ function renderWestern(chart) {
     // Small tick on the outer rim
     const t1 = pos(R_OUTER, lonFromAsc);
     const t2 = pos(R_OUTER + 6, lonFromAsc);
-    svg('line', { x1: t1.x, y1: t1.y, x2: t2.x, y2: t2.y, stroke: '#c87b5a', 'stroke-width': 1.2 }, root);
+    svg('line', { x1: t1.x, y1: t1.y, x2: t2.x, y2: t2.y, stroke: '#ff7849', 'stroke-width': 1.2 }, root);
   });
 
   // ── Aspect lines (Western only — graha drishti for sidereal is a different system)
@@ -1587,7 +1585,7 @@ function renderWestern(chart) {
   }
 
   // ── Inner rim
-  svg('circle', { cx, cy, r: R_INNER_RIM, fill: 'none', stroke: 'rgba(200, 123, 90,0.22)', 'stroke-width': 0.5 }, root);
+  svg('circle', { cx, cy, r: R_INNER_RIM, fill: 'none', stroke: 'rgba(255, 120, 73,0.22)', 'stroke-width': 0.5 }, root);
 
   // ── Planets — stack radially when clustered
   const grouped = groupPlanetsByCloseness(chart.planets);
@@ -1604,7 +1602,7 @@ function renderWestern(chart) {
       // Planet body
       const dot = svg('circle', {
         cx: dotPos.x, cy: dotPos.y, r: 11.5, fill: p.color,
-        stroke: 'rgba(42, 29, 16, 0.50)', 'stroke-width': 0.8,
+        stroke: 'rgba(244, 243, 238, 0.50)', 'stroke-width': 0.8,
         class: 'planet planets-flying',
         'data-planet': p.name,
         style: `color:${p.color}`,
@@ -1615,9 +1613,9 @@ function renderWestern(chart) {
       const glyph = svg('text', {
         x: dotPos.x, y: dotPos.y,
         'text-anchor': 'middle', 'dominant-baseline': 'central',
-        fill: '#f6ecd2', 'font-size': 14, 'font-weight': 700,
+        fill: '#0c0d11', 'font-size': 14, 'font-weight': 800,
         'pointer-events': 'none',
-        'font-family': "'Spectral', Georgia, serif",
+        'font-family': "'Inter', sans-serif",
       }, root);
       glyph.textContent = p.symbol;
 
@@ -1634,8 +1632,8 @@ function renderWestern(chart) {
   });
 
   // ── Center medallion (mandala-ish)
-  svg('circle', { cx, cy, r: R_INNER_RIM - 4, fill: 'url(#centerGrad)', stroke: 'rgba(200, 123, 90,0.18)', 'stroke-width': 0.4 }, root);
-  svg('circle', { cx, cy, r: R_CENTER, fill: 'rgba(60, 35, 15, 0.06)', stroke: 'rgba(200, 123, 90, 0.5)', 'stroke-width': 0.8 }, root);
+  svg('circle', { cx, cy, r: R_INNER_RIM - 4, fill: 'url(#centerGrad)', stroke: 'rgba(255, 120, 73,0.18)', 'stroke-width': 0.4 }, root);
+  svg('circle', { cx, cy, r: R_CENTER, fill: 'rgba(255, 255, 255, 0.06)', stroke: 'rgba(255, 120, 73, 0.5)', 'stroke-width': 0.8 }, root);
   // 12-petal radial pattern
   for (let i = 0; i < 12; i++) {
     const a = (i * 30) * Math.PI / 180;
@@ -1644,12 +1642,12 @@ function renderWestern(chart) {
     svg('line', {
       x1: cx + Math.cos(a) * inner, y1: cy - Math.sin(a) * inner,
       x2: cx + Math.cos(a) * outer, y2: cy - Math.sin(a) * outer,
-      stroke: 'rgba(200, 123, 90,0.10)', 'stroke-width': 0.4,
+      stroke: 'rgba(255, 120, 73,0.10)', 'stroke-width': 0.4,
     }, root);
   }
   // Center sun glyph
-  svg('circle', { cx, cy, r: 4, fill: 'none', stroke: 'rgba(200, 123, 90,0.7)', 'stroke-width': 0.8 }, root);
-  svg('circle', { cx, cy, r: 1.4, fill: 'rgba(200, 123, 90,0.85)' }, root);
+  svg('circle', { cx, cy, r: 4, fill: 'none', stroke: 'rgba(255, 120, 73,0.7)', 'stroke-width': 0.8 }, root);
+  svg('circle', { cx, cy, r: 1.4, fill: 'rgba(255, 120, 73,0.85)' }, root);
 }
 
 // Cluster planets that are within ~7° so we can stack them radially
@@ -1771,7 +1769,7 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
   // Background frame
   svg('rect', {
     x: PAD - 6, y: PAD - 6, width: SIZE + 12, height: SIZE + 12,
-    fill: 'transparent', stroke: 'rgba(200, 123, 90,0.14)', 'stroke-width': 0.6, rx: 4,
+    fill: 'transparent', stroke: 'rgba(255, 120, 73,0.14)', 'stroke-width': 0.6, rx: 4,
   }, root);
 
   // The 12 zones
@@ -1785,7 +1783,7 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
     // Polygon
     svg('polygon', {
       points, fill,
-      stroke: 'rgba(200, 123, 90,0.55)',
+      stroke: 'rgba(255, 120, 73,0.55)',
       'stroke-width': 1.0,
       'stroke-linejoin': 'round',
     }, root);
@@ -1795,15 +1793,15 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
     const dev = svg('text', {
       x: sx + PAD, y: sy + PAD - 4,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: 'rgba(54, 40, 28, 0.72)',
-      'font-size': 12, 'font-family': "'Fraunces', 'Noto Sans Devanagari', serif", 'font-weight': 500,
+      fill: 'rgba(244, 243, 238, 0.72)',
+      'font-size': 12, 'font-family': "'Noto Sans Devanagari', 'Inter', sans-serif", 'font-weight': 500,
     }, root);
     dev.textContent = SIGNS_DEV[signIdx];
     const sg = svg('text', {
       x: sx + PAD, y: sy + PAD + 9,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: 'rgba(54, 40, 28, 0.45)',
-      'font-size': 9, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 500,
+      fill: 'rgba(244, 243, 238, 0.45)',
+      'font-size': 9, 'font-family': "'Inter', sans-serif", 'font-weight': 500,
       'letter-spacing': '0.08em',
     }, root);
     sg.textContent = SIGN_GLYPHS[signIdx] + '  ' + SIGNS[signIdx].slice(0, 3).toUpperCase();
@@ -1813,8 +1811,8 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
     const hn = svg('text', {
       x: cxp + PAD, y: cyp + PAD - 14,
       'text-anchor': 'middle', 'dominant-baseline': 'central',
-      fill: i === 0 ? 'rgba(200, 123, 90,0.75)' : 'rgba(42, 29, 16, 0.42)',
-      'font-size': 10, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 500,
+      fill: i === 0 ? 'rgba(255, 120, 73,0.75)' : 'rgba(244, 243, 238, 0.42)',
+      'font-size': 10, 'font-family': "'Inter', sans-serif", 'font-weight': 500,
       'letter-spacing': '0.1em',
     }, root);
     hn.textContent = i === 0 ? 'LAGNA' : `H${houseNum}`;
@@ -1827,7 +1825,7 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
         x: cxp + PAD, y: py,
         'text-anchor': 'middle', 'dominant-baseline': 'central',
         fill: p.color,
-        'font-size': 12, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 600,
+        'font-size': 12, 'font-family': "'Inter', sans-serif", 'font-weight': 600,
         class: 'planet-text', 'data-planet': p.name,
         style: 'cursor:pointer;',
       }, root);
@@ -1840,8 +1838,8 @@ function renderNorthIndianKundli(svgEl, chart, opts = {}) {
   if (opts.title) {
     const tt = svg('text', {
       x: total / 2, y: PAD - 4, 'text-anchor': 'middle',
-      fill: 'rgba(42, 29, 16, 0.50)',
-      'font-size': 9, 'font-family': "'Spectral', Georgia, serif", 'font-weight': 500,
+      fill: 'rgba(244, 243, 238, 0.50)',
+      'font-size': 9, 'font-family': "'Inter', sans-serif", 'font-weight': 500,
       'letter-spacing': '0.32em',
     }, root);
     tt.textContent = opts.title;

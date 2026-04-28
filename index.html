@@ -604,10 +604,17 @@
     font-style: italic; font-weight: 300;
     font-size: 17px; color: var(--ink);
   }
+  /* KP detail table is content-heavy — span wider when grid has room */
+  @media (min-width: 940px) {
+    .chart-card--table { grid-column: span 2; }
+  }
+  @media (min-width: 1280px) {
+    .chart-card--table { grid-column: span 3; }
+  }
   .chart-card--table .table-wrap {
     margin-top: 12px;
     overflow-x: auto;
-    max-height: 320px;
+    max-height: 520px;
     overflow-y: auto;
   }
   .data-table {
@@ -771,6 +778,12 @@
     flex-wrap: wrap;
     margin-bottom: 12px;
   }
+  .cta-actions a.chip {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+  .cta-actions a.chip:hover { text-decoration: none; }
   .cta-foot {
     color: var(--ink-3);
     font-size: 11px;
@@ -866,7 +879,7 @@
 <section class="hero">
   <p class="eyebrow">A quiet astrolabe · open source</p>
   <h1>Astro <em>Explorer</em></h1>
-  <p class="tagline">Drag the timeline. Watch the planets glide across your chart in two languages — a Western wheel and a South Indian Kundli, side by side.</p>
+  <p class="tagline">Drag the timeline. Watch the planets glide across your chart in two languages — a Western wheel and a North Indian Kundli, side by side.</p>
 </section>
 
 <main>
@@ -1012,7 +1025,7 @@
   </section>
 
   <p class="legend">
-    Whole-sign houses · Lahiri ayanamsa for sidereal · Equal-House for Bhav Chalit · calculations by
+    Whole-sign houses · Lahiri ayanamsa for sidereal · calculations by
     <a href="https://github.com/cosinekitty/astronomy">astronomy-engine</a> (MIT) · open source on
     <a href="https://github.com/hemantsatishjadhav06-ai/astro-explorer">GitHub</a>
   </p>

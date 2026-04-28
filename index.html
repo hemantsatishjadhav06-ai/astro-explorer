@@ -197,7 +197,11 @@
     text-transform: uppercase;
     margin-right: 6px;
   }
-  button.chip {
+  /* Chips work on both <button> and <a>; <a> needs explicit reset for default
+     browser link styling. */
+  .chip,
+  button.chip,
+  a.chip {
     background: transparent;
     border: 1px solid var(--line);
     color: var(--ink-2);
@@ -209,16 +213,24 @@
     font-weight: 500;
     transition: all 0.18s ease;
     letter-spacing: 0.01em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
-  button.chip:hover {
+  .chip:hover,
+  button.chip:hover,
+  a.chip:hover {
     background: var(--surface-2);
     color: var(--ink);
     border-color: var(--line-2);
+    text-decoration: none;
   }
+  .chip.active,
   button.chip.active {
     background: var(--accent-soft);
     color: var(--accent);
-    border-color: rgba(212, 173, 107, 0.35);
+    border-color: rgba(177, 58, 28, 0.35);
     font-weight: 600;
   }
 
@@ -757,12 +769,7 @@
     flex-wrap: wrap;
     margin-bottom: 12px;
   }
-  .cta-actions a.chip {
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-  }
-  .cta-actions a.chip:hover { text-decoration: none; }
+  /* a.chip styling now lives in the unified .chip rule above */
   .cta-foot {
     color: var(--ink-3);
     font-size: 11px;

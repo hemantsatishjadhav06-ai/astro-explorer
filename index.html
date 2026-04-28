@@ -736,6 +736,50 @@
   }
   .rec-context .chip { align-self: flex-start; }
 
+  /* CTA card — the missing customer-facing call-to-action.
+     Replaces filler with a placeholder for the real astrologer's booking link. */
+  .cta-section { margin: 24px 0 32px; }
+  .cta-card {
+    background:
+      radial-gradient(ellipse 600px 200px at 30% -20%, rgba(212, 173, 107, 0.18), transparent 70%),
+      var(--surface);
+    border: 1px solid rgba(212, 173, 107, 0.28);
+    border-radius: 18px;
+    padding: 28px 32px;
+    backdrop-filter: blur(20px);
+  }
+  .cta-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(24px, 3.4vw, 34px);
+    margin: 8px 0 8px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    max-width: 22ch;
+  }
+  .cta-body {
+    color: var(--ink-2);
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin: 0 0 16px;
+    max-width: 56ch;
+  }
+  .cta-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .cta-foot {
+    color: var(--ink-3);
+    font-size: 11px;
+    margin: 0;
+    font-style: italic;
+  }
+  .rec-empty .rec-icon { color: var(--ink-3); }
+  .rec-empty .rec-title { font-style: italic; color: var(--ink-2); }
+
   /* Export bar */
   .export-bar {
     display: flex;
@@ -896,37 +940,31 @@
   </section>
 
   <section class="variants-header">
-    <p class="section-label">All six chart variants</p>
-    <h2 class="variants-title">The same sky, six languages</h2>
-    <p class="variants-sub">Lagan · KP · Nirayan · Bhav Chalit · Sayana · Navamsa D9 — drawn in the North Indian style.</p>
+    <p class="section-label">Chart variants</p>
+    <h2 class="variants-title">The same sky, four languages</h2>
+    <p class="variants-sub">Lagan and Navamsa D9 are the two charts a Vedic astrologer reads first; Sayana is the Western view; KP adds nakshatra and sub-lord detail for those who want it.</p>
   </section>
 
   <section class="variants-grid">
     <div class="chart-card chart-card--small">
-      <h3>1 · Lagan (Rasi)</h3>
+      <h3>Lagan (Rasi)</h3>
       <p class="chart-sub">Lahiri sidereal · whole-sign</p>
       <svg id="chartLagan" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
     <div class="chart-card chart-card--small">
-      <h3>4 · Bhav Chalit</h3>
-      <p class="chart-sub">Lahiri · equal-house cusps</p>
-      <svg id="chartBhav" preserveAspectRatio="xMidYMid meet"></svg>
-      <p class="chart-foot">Houses by cusp — planets may shift.</p>
-    </div>
-    <div class="chart-card chart-card--small">
-      <h3>5 · Sayana (Tropical)</h3>
-      <p class="chart-sub">Western tropical zodiac</p>
-      <svg id="chartSayana" preserveAspectRatio="xMidYMid meet"></svg>
-    </div>
-    <div class="chart-card chart-card--small">
-      <h3>6 · Navamsa D9</h3>
+      <h3>Navamsa D9</h3>
       <p class="chart-sub">Lahiri · 9th-harmonic divisional</p>
       <svg id="chartNavamsa" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
+    <div class="chart-card chart-card--small">
+      <h3>Sayana (Tropical)</h3>
+      <p class="chart-sub">Western tropical zodiac</p>
+      <svg id="chartSayana" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
 
     <div class="chart-card chart-card--table">
-      <h3>2 · KP Chart</h3>
-      <p class="chart-sub">Krishnamurti Paddhati · with sub-lords</p>
+      <h3>KP detail</h3>
+      <p class="chart-sub">Krishnamurti Paddhati · nakshatra · sub-lord</p>
       <div class="table-wrap">
         <table class="data-table">
           <thead>
@@ -936,33 +974,35 @@
         </table>
       </div>
     </div>
-
-    <div class="chart-card chart-card--table">
-      <h3>3 · Nirayan</h3>
-      <p class="chart-sub">Sidereal degrees (Lahiri)</p>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Planet</th><th>Sign</th><th>Deg</th><th>Min</th></tr>
-          </thead>
-          <tbody id="nirayanTableBody"></tbody>
-        </table>
-      </div>
-    </div>
   </section>
 
   <section class="rec-section">
-    <p class="section-label">Combine brain · what the chart suggests</p>
+    <p class="section-label">Notable patterns</p>
+    <h2 class="variants-title">What the chart actually says</h2>
+    <p class="variants-sub">Only patterns with genuine signal: lifecycle windows, stelliums, nodal angles, and matches against your own notes. No filler.</p>
     <div class="rec-grid">
       <div class="rec-list-wrap">
         <div id="recommendList" class="rec-list"></div>
       </div>
       <aside class="rec-context">
-        <h4>Your context</h4>
-        <p class="rec-hint">Paste relevant bits from your Obsidian vault, journal, or current life situation. Keywords (career, relationship, money, health, family, creative, travel) cross-reference with the chart's houses to surface personalized notes.</p>
-        <textarea id="contextNotes" placeholder="Paste here. Nothing leaves your browser."></textarea>
-        <button class="chip" id="btnApplyContext">Combine with chart</button>
+        <h4>Your own notes</h4>
+        <p class="rec-hint">Paste anything — journal entries, what's on your mind right now, a question you came here with. Mentions of <em>career, relationship, money, health, family, creative, travel</em> are cross-referenced with the matching house. Nothing leaves your browser; nothing goes to a server.</p>
+        <textarea id="contextNotes" placeholder="What is on your mind? What life area is the question about?"></textarea>
+        <button class="chip" id="btnApplyContext">Refresh with my notes</button>
       </aside>
+    </div>
+  </section>
+
+  <section class="cta-section" id="ctaSection">
+    <div class="cta-card">
+      <p class="section-label">If you want to go deeper</p>
+      <h3 class="cta-title">A real reading is worth more than a chart.</h3>
+      <p class="cta-body">This tool shows the geometry. It doesn't see your life. If anything here landed, work with a real astrologer who can read your chart in context — your stage, your culture, your specific question.</p>
+      <div class="cta-actions">
+        <a class="chip chip--strong" id="ctaBookLink" href="#" target="_blank" rel="noopener">Book a 60-minute reading →</a>
+        <a class="chip" href="#" id="ctaLearnLink">How readings work</a>
+      </div>
+      <p class="cta-foot">Astrologer not configured yet · this is the slot where the page owner adds their booking link.</p>
     </div>
   </section>
 
@@ -1098,13 +1138,11 @@ const els = {
   detailTitle:  $('#detailTitle'),
   detailMeta:   $('#detailMeta'),
   detailBody:   $('#detailBody'),
-  // 6-chart grid
+  // 4-chart grid (Lagan + Navamsa + Sayana NIC + KP detail table)
   chartLagan:    $('#chartLagan'),
-  chartBhav:     $('#chartBhav'),
   chartSayana:   $('#chartSayana'),
   chartNavamsa:  $('#chartNavamsa'),
   kpTableBody:   $('#kpTableBody'),
-  nirayanTableBody: $('#nirayanTableBody'),
   // Recommendations + notes
   recommendList: $('#recommendList'),
   contextNotes:  $('#contextNotes'),
@@ -1284,24 +1322,6 @@ function computeChartForced(date, mode) {
   return c;
 }
 
-// Bhav Chalit: same Lahiri positions, but planets placed in Equal-House houses
-// (each house = 30° starting from the ASC). The chart drawing places planets in their
-// SIGN position (so the visual is identical to Lagan unless we colour by house — we add an
-// alternate "house-colour" mode). For the table view we show sign + house.
-function computeBhavChalit(date) {
-  // Same Lahiri chart; the difference is interpretive (planets are listed by house).
-  // Equal-House and whole-sign give the same house for any planet whose degree-in-sign
-  // is greater-or-equal to the ASC's degree-in-sign. So we recompute houses with the
-  // Equal-House rule for accuracy.
-  const c = computeChartForced(date, 'sidereal');
-  c.planets = c.planets.map(p => {
-    const diff = ((p.longitude - c.ascendant) % 360 + 360) % 360;
-    const houseEqual = Math.floor(diff / 30) + 1;
-    return { ...p, house: houseEqual };
-  });
-  return c;
-}
-
 // Compute the navamsa (D9) chart. Each planet's longitude is replaced by its D9 position
 // (sign × 30 + degree-into-D9-sign). The D9 ascendant is computed from the natal ASC.
 function computeNavamsaChart(date) {
@@ -1325,14 +1345,13 @@ function computeNavamsaChart(date) {
   };
 }
 
-// All 6 chart variants for the per-chart cards
+// Four chart variants: Lagan (Lahiri Rasi), Sayana (Tropical), Navamsa (D9).
+// KP shares Lahiri positions; the difference is the sub-lord / nakshatra presentation.
 function computeAllVariants(date) {
   return {
-    lagan:     computeChartForced(date, 'sidereal'),     // Lahiri Rasi
-    bhavchalit: computeBhavChalit(date),                  // Equal-House placement
-    sayana:    computeChartForced(date, 'tropical'),      // Tropical
-    navamsa:   computeNavamsaChart(date),                 // D9
-    // KP and Nirayan share the Lahiri positions; the difference is in presentation
+    lagan:   computeChartForced(date, 'sidereal'),
+    sayana:  computeChartForced(date, 'tropical'),
+    navamsa: computeNavamsaChart(date),
   };
 }
 
@@ -1510,23 +1529,26 @@ function renderWestern(chart) {
     svg('line', { x1: t1.x, y1: t1.y, x2: t2.x, y2: t2.y, stroke: '#d4ad6b', 'stroke-width': 1.2 }, root);
   });
 
-  // ── Aspect lines (drawn in inner zone)
-  for (let i = 0; i < chart.planets.length; i++) {
-    for (let j = i + 1; j < chart.planets.length; j++) {
-      const p1 = chart.planets[i];
-      const p2 = chart.planets[j];
-      let diff = Math.abs(p1.longitude - p2.longitude);
-      if (diff > 180) diff = 360 - diff;
-      for (const aspect of ASPECTS) {
-        if (Math.abs(diff - aspect.angle) < aspect.orb) {
-          const a1 = pos(R_INNER_RIM + 4, p1.longitude - chart.ascendant);
-          const a2 = pos(R_INNER_RIM + 4, p2.longitude - chart.ascendant);
-          svg('line', {
-            x1: a1.x, y1: a1.y, x2: a2.x, y2: a2.y,
-            stroke: aspect.color, 'stroke-width': 0.9,
-            'stroke-linecap': 'round',
-          }, root);
-          break;
+  // ── Aspect lines (Western only — graha drishti for sidereal is a different system)
+  // Hide on Vedic/sidereal mode to avoid mixing traditions.
+  if (state.zodiacMode === 'tropical') {
+    for (let i = 0; i < chart.planets.length; i++) {
+      for (let j = i + 1; j < chart.planets.length; j++) {
+        const p1 = chart.planets[i];
+        const p2 = chart.planets[j];
+        let diff = Math.abs(p1.longitude - p2.longitude);
+        if (diff > 180) diff = 360 - diff;
+        for (const aspect of ASPECTS) {
+          if (Math.abs(diff - aspect.angle) < aspect.orb) {
+            const a1 = pos(R_INNER_RIM + 4, p1.longitude - chart.ascendant);
+            const a2 = pos(R_INNER_RIM + 4, p2.longitude - chart.ascendant);
+            svg('line', {
+              x1: a1.x, y1: a1.y, x2: a2.x, y2: a2.y,
+              stroke: aspect.color, 'stroke-width': 0.9,
+              'stroke-linecap': 'round',
+            }, root);
+            break;
+          }
         }
       }
     }
@@ -1799,17 +1821,15 @@ function renderKundli(chart) {
   renderNorthIndianKundli(els.kundliChart, chart, { size: 460, padding: 20 });
 }
 
-// Render the 6-chart grid: Lagan, Bhav Chalit, Sayana, Navamsa, KP table, Nirayan table
+// Render the 4-chart grid: Lagan + Navamsa D9 + Sayana NIC charts, plus the KP detail table.
+// (Bhav Chalit and Nirayan are intentionally cut — Bhav Chalit is Equal-House approximation,
+// and Nirayan duplicates the Lagan view in tabular form.)
 function renderAllVariants(date) {
   const v = computeAllVariants(date);
-  // Visual NIC charts
-  if (els.chartLagan)      renderNorthIndianKundli(els.chartLagan,      v.lagan,     { size: 320, padding: 14, title: 'LAHIRI · WHOLE-SIGN' });
-  if (els.chartBhav)       renderNorthIndianKundli(els.chartBhav,       v.bhavchalit,{ size: 320, padding: 14, title: 'LAHIRI · EQUAL HOUSE' });
-  if (els.chartSayana)     renderNorthIndianKundli(els.chartSayana,     v.sayana,    { size: 320, padding: 14, title: 'TROPICAL' });
-  if (els.chartNavamsa)    renderNorthIndianKundli(els.chartNavamsa,    v.navamsa,   { size: 320, padding: 14, title: 'D9 NAVAMSA' });
-  // Table-style cards
+  if (els.chartLagan)   renderNorthIndianKundli(els.chartLagan,   v.lagan,   { size: 320, padding: 14, title: 'LAHIRI · WHOLE-SIGN' });
+  if (els.chartSayana)  renderNorthIndianKundli(els.chartSayana,  v.sayana,  { size: 320, padding: 14, title: 'TROPICAL' });
+  if (els.chartNavamsa) renderNorthIndianKundli(els.chartNavamsa, v.navamsa, { size: 320, padding: 14, title: 'D9 NAVAMSA' });
   renderKpTable(v.lagan);
-  renderNirayanTable(v.lagan);
 }
 
 function renderKpTable(chart) {
@@ -1825,17 +1845,6 @@ function renderKpTable(chart) {
     const nak = getNakshatra(p.longitude);
     const sub = getSubLord(p.longitude);
     appendRow(tbody, [p.name, p.sign, fmtDeg(p.degreeInSign), nak.name, nak.pada, nak.lord, sub], null, p);
-  }
-}
-
-function renderNirayanTable(chart) {
-  const tbody = els.nirayanTableBody;
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  appendRow(tbody, ['ASC', SIGNS[longitudeToSign(chart.ascendant)], fmtDeg(chart.ascendant % 30), ((chart.ascendant - longitudeToSign(chart.ascendant) * 30) * 60 % 60).toFixed(0) + "'"], 'asc');
-  for (const p of chart.planets) {
-    const arcmin = (p.degreeInSign * 60) % 60;
-    appendRow(tbody, [p.name, p.sign, fmtDeg(p.degreeInSign), arcmin.toFixed(0) + "'"], null, p);
   }
 }
 
@@ -1921,49 +1930,32 @@ function refresh() {
 // Rule-based insights derived purely from the chart and the current date offset.
 // "Combine brain": optionally cross-references whatever the user has pasted
 // into the Your-Context textarea (Obsidian export, journal notes, etc.).
+// Recommendations: only show when there's genuine signal. We removed the always-on
+// "big three readout" (it's a tautology — every chart has a Sun, Moon and ASC).
+// We surface: notable lifecycle windows (Saturn return), structural patterns (stellium,
+// nodal axis crossing the same house as a major planet), and house-level matches against
+// any text the user pasted in the notes box.
 function refreshRecommendations(chart) {
   if (!els.recommendList) return;
   const insights = [];
   const ageYears = (state.currentDate - state.birthDate) / (365.25 * 24 * 3600 * 1000);
 
-  // Big-three readout
-  const sun  = chart.planets.find(p => p.name === 'Sun');
-  const moon = chart.planets.find(p => p.name === 'Moon');
-  if (sun && moon) {
-    insights.push({
-      icon: '☉',
-      title: `Sun in ${sun.sign} · Moon in ${moon.sign} · ${SIGNS[longitudeToSign(chart.ascendant)]} rising`,
-      body: `Identity arrives ${SIGN_VIBES[sun.signIndex]}; the inner weather is ${SIGN_VIBES[moon.signIndex]}; the world meets you ${SIGN_VIBES[longitudeToSign(chart.ascendant)]}.`,
-    });
-  }
-
   // Saturn-return windows
   if (ageYears > 28 && ageYears < 31) {
     insights.push({
       icon: '♄',
-      title: 'First Saturn return — ages 28–31',
-      body: 'A structural threshold: Saturn returns to its natal sign after ~29.5 years. Old commitments get audited; whatever you build now tends to last.',
+      title: 'First Saturn return',
+      body: 'Saturn returns to its natal position after ~29.5 years. Structural questions surface — what stays, what is restructured, what gets rebuilt.',
     });
   } else if (ageYears > 57 && ageYears < 61) {
     insights.push({
       icon: '♄',
-      title: 'Second Saturn return — ages 58–60',
-      body: 'A maturity audit. Calling-level questions surface — what is yours to keep carrying, what to set down.',
+      title: 'Second Saturn return',
+      body: 'A maturity audit. Calling-level questions: what is yours to keep carrying, what to set down.',
     });
   }
 
-  // Rahu-Ketu axis
-  const rahu = chart.planets.find(p => p.name === 'Rahu');
-  const ketu = chart.planets.find(p => p.name === 'Ketu');
-  if (rahu && ketu) {
-    insights.push({
-      icon: '☊',
-      title: `Nodal axis · Rahu in ${rahu.sign} (H${rahu.house}) ↔ Ketu in ${ketu.sign} (H${ketu.house})`,
-      body: `Rahu is the unfamiliar territory you are pulled toward; Ketu is the muscle memory you are loosening. The axis crosses your ${ordinal(rahu.house)} and ${ordinal(ketu.house)} houses.`,
-    });
-  }
-
-  // Stellium detection (≥ 3 planets in one sign)
+  // Stellium (≥ 3 planets in one sign) — genuine pattern, worth noting
   const bySign = {};
   for (const p of chart.planets) (bySign[p.signIndex] || (bySign[p.signIndex] = [])).push(p);
   for (const idx in bySign) {
@@ -1972,40 +1964,59 @@ function refreshRecommendations(chart) {
       insights.push({
         icon: '✦',
         title: `Stellium in ${SIGNS[idx]}`,
-        body: `${names} cluster in ${SIGNS[idx]}. That sign's themes (${SIGN_VIBES[idx]}) are amplified across multiple life arenas.`,
+        body: `${names} cluster in ${SIGNS[idx]} — ${SIGN_VIBES[idx]} themes are amplified across multiple life arenas.`,
       });
     }
   }
 
-  // Combine with user-provided context (pure keyword scan — opt-in)
+  // Nodal axis only when it crosses an angular house (1/4/7/10) — that's where it actually bites
+  const rahu = chart.planets.find(p => p.name === 'Rahu');
+  const ketu = chart.planets.find(p => p.name === 'Ketu');
+  if (rahu && ketu && [1,4,7,10].some(h => h === rahu.house || h === ketu.house)) {
+    insights.push({
+      icon: '☊',
+      title: `Nodal axis on an angle · Rahu H${rahu.house} ↔ Ketu H${ketu.house}`,
+      body: `When the nodes cross an angular house (1/4/7/10), the pull between unfamiliar (Rahu) and familiar (Ketu) shows up in self, home, partnership or career — the most visible parts of life.`,
+    });
+  }
+
+  // Combine with user-provided text — keyword → house
   const ctx = (els.contextNotes && els.contextNotes.value || '').toLowerCase();
   if (ctx.length > 20) {
     const themes = [
-      { kws: ['career','job','work','promotion','startup'], house: 10, note: 'career and public reputation' },
+      { kws: ['career','job','work','promotion','startup'], house: 10, note: 'career and public face' },
       { kws: ['relationship','partner','marriage','dating','breakup'], house: 7, note: 'partnership' },
-      { kws: ['money','income','finance','salary','debt'], house: 2, note: 'resources and what you hold' },
+      { kws: ['money','income','finance','salary','debt'], house: 2, note: 'resources' },
       { kws: ['health','illness','sleep','workout','diet'], house: 6, note: 'daily routine and health' },
       { kws: ['family','parent','mother','father','home'], house: 4, note: 'roots and home' },
       { kws: ['creative','art','child','romance'], house: 5, note: 'creativity and play' },
       { kws: ['travel','study','philosophy','spiritual','teacher'], house: 9, note: 'long journeys and meaning' },
     ];
     for (const th of themes) {
-      if (th.kws.some(k => ctx.includes(k))) {
+      const matched = th.kws.find(k => ctx.includes(k));
+      if (matched) {
         const tenants = chart.planets.filter(p => p.house === th.house);
         const desc = tenants.length
           ? `${tenants.map(p => p.symbol + ' ' + p.name).join(', ')} sit in your ${ordinal(th.house)} house — the house of ${th.note}.`
-          : `Your ${ordinal(th.house)} house — ${th.note} — is empty (which means look at its ruler instead).`;
+          : `Your ${ordinal(th.house)} house — ${th.note} — has no major-planet tenants. Look at the ruler of ${SIGNS[(longitudeToSign(chart.ascendant) + th.house - 1) % 12]} instead.`;
         insights.push({
           icon: '⊕',
-          title: `Your notes mention ${th.kws[0]}`,
-          body: desc + ' Worth examining its tenants and ruler.',
+          title: `Your notes mention "${matched}" → ${ordinal(th.house)} house`,
+          body: desc,
         });
       }
     }
   }
 
-  // Render
+  // If nothing genuinely interesting came up, show a quiet placeholder rather than fake insight.
   els.recommendList.innerHTML = '';
+  if (insights.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'rec-item rec-empty';
+    empty.innerHTML = '<span class="rec-icon">·</span><div class="rec-text"><p class="rec-title">No standout patterns at this date</p><p class="rec-body">Scrub the timeline forward — Saturn returns, stelliums and other notable windows will appear here when they arrive.</p></div>';
+    els.recommendList.appendChild(empty);
+    return;
+  }
   insights.forEach(ins => {
     const card = document.createElement('div');
     card.className = 'rec-item';

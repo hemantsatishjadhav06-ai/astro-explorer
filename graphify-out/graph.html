@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>graphify - graphify-out/graph.html</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  #graph { flex: 1; }
+  #sidebar { width: 280px; background: #1a1a2e; border-left: 1px solid #2a2a4e; display: flex; flex-direction: column; overflow: hidden; }
+  #search-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
+  #search { width: 100%; background: #0f0f1a; border: 1px solid #3a3a5e; color: #e0e0e0; padding: 7px 10px; border-radius: 6px; font-size: 13px; outline: none; }
+  #search:focus { border-color: #4E79A7; }
+  #search-results { max-height: 140px; overflow-y: auto; padding: 4px 12px; border-bottom: 1px solid #2a2a4e; display: none; }
+  .search-item { padding: 4px 6px; cursor: pointer; border-radius: 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-item:hover { background: #2a2a4e; }
+  #info-panel { padding: 14px; border-bottom: 1px solid #2a2a4e; min-height: 140px; }
+  #info-panel h3 { font-size: 13px; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  #info-content { font-size: 13px; color: #ccc; line-height: 1.6; }
+  #info-content .field { margin-bottom: 5px; }
+  #info-content .field b { color: #e0e0e0; }
+  #info-content .empty { color: #555; font-style: italic; }
+  .neighbor-link { display: block; padding: 2px 6px; margin: 2px 0; border-radius: 3px; cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid #333; }
+  .neighbor-link:hover { background: #2a2a4e; }
+  #neighbors-list { max-height: 160px; overflow-y: auto; margin-top: 4px; }
+  #legend-wrap { flex: 1; overflow-y: auto; padding: 12px; }
+  #legend-wrap h3 { font-size: 13px; color: #aaa; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .legend-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; border-radius: 4px; font-size: 12px; }
+  .legend-item:hover { background: #2a2a4e; padding-left: 4px; }
+  .legend-item.dimmed { opacity: 0.35; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .legend-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .legend-count { color: #666; font-size: 11px; }
+  #stats { padding: 10px 14px; border-top: 1px solid #2a2a4e; font-size: 11px; color: #555; }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+<div id="sidebar">
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Search nodes..." autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+  <div id="info-panel">
+    <h3>Node Info</h3>
+    <div id="info-content"><span class="empty">Click a node to inspect it</span></div>
+  </div>
+  <div id="legend-wrap">
+    <h3>Communities</h3>
+    <div id="legend"></div>
+  </div>
+  <div id="stats">52 nodes &middot; 76 edges &middot; 11 communities</div>
+</div>
+<script>
+const RAW_NODES = [{"id": "test_js", "label": "test.js", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 35.0, "font": {"size": 12, "color": "#ffffff"}, "title": "test.js", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 10}, {"id": "test_geteclipticlongitude", "label": "getEclipticLongitude()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "getEclipticLongitude()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 2}, {"id": "test_getmeanlunarnode", "label": "getMeanLunarNode()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "getMeanLunarNode()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 2}, {"id": "test_longitudetosign", "label": "longitudeToSign()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "longitudeToSign()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 1}, {"id": "test_getayanamsa", "label": "getAyanamsa()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "getAyanamsa()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 1}, {"id": "test_getascendant", "label": "getAscendant()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "getAscendant()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 1}, {"id": "test_assert", "label": "assert()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "assert()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 1}, {"id": "test_approxeq", "label": "approxEq()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "approxEq()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 1}, {"id": "test_getnakshatra", "label": "getNakshatra()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "getNakshatra()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 2}, {"id": "test_getsublord", "label": "getSubLord()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "getSubLord()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 2}, {"id": "test_navamsasignof", "label": "navamsaSignOf()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "navamsaSignOf()", "community": 0, "community_name": "Test Suite", "source_file": "test.js", "file_type": "code", "degree": 1}, {"id": "index_western_wheel", "label": "Western Wheel", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Western Wheel", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_north_indian_kundli", "label": "North Indian Kundli", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 17.5, "font": {"size": 12, "color": "#ffffff"}, "title": "North Indian Kundli", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 3}, {"id": "index_lagan_rasi", "label": "Lagan (Rasi) Chart", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 22.5, "font": {"size": 12, "color": "#ffffff"}, "title": "Lagan (Rasi) Chart", "community": 6, "community_name": "Chart Variants Grid", "source_file": "index.html", "file_type": "document", "degree": 5}, {"id": "index_kp_chart", "label": "KP Chart (Krishnamurti Paddhati)", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": "KP Chart (Krishnamurti Paddhati)", "community": 5, "community_name": "KP & Vedic Sub-Lord", "source_file": "index.html", "file_type": "document", "degree": 6}, {"id": "index_nirayan_table", "label": "Nirayan Table", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Nirayan Table", "community": 7, "community_name": "Lahiri Ayanamsa", "source_file": "index.html", "file_type": "document", "degree": 4}, {"id": "index_bhav_chalit", "label": "Bhav Chalit Chart", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 22.5, "font": {"size": 12, "color": "#ffffff"}, "title": "Bhav Chalit Chart", "community": 6, "community_name": "Chart Variants Grid", "source_file": "index.html", "file_type": "document", "degree": 5}, {"id": "index_sayana_tropical", "label": "Sayana (Tropical) Chart", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 17.5, "font": {"size": 12, "color": "#ffffff"}, "title": "Sayana (Tropical) Chart", "community": 4, "community_name": "Project Identity & Rationale", "source_file": "index.html", "file_type": "document", "degree": 3}, {"id": "index_navamsa_d9", "label": "Navamsa D9 Chart", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Navamsa D9 Chart", "community": 8, "community_name": "Navamsa D9", "source_file": "index.html", "file_type": "document", "degree": 4}, {"id": "index_lahiri_ayanamsa", "label": "Lahiri Ayanamsa", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Lahiri Ayanamsa", "community": 7, "community_name": "Lahiri Ayanamsa", "source_file": "index.html", "file_type": "document", "degree": 8}, {"id": "index_mean_lunar_node", "label": "Mean Lunar Node Formula (Rahu/Ketu)", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Mean Lunar Node Formula (Rahu/Ketu)", "community": 3, "community_name": "Recommendations Engine", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_nakshatra", "label": "27 Nakshatras", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "27 Nakshatras", "community": 5, "community_name": "KP & Vedic Sub-Lord", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_vimshottari_sublord", "label": "Vimshottari Sub-Lord", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Vimshottari Sub-Lord", "community": 5, "community_name": "KP & Vedic Sub-Lord", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_navamsa_mapping", "label": "Navamsa D9 Mapping", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Navamsa D9 Mapping", "community": 8, "community_name": "Navamsa D9", "source_file": "index.html", "file_type": "document", "degree": 1}, {"id": "index_whole_sign_house", "label": "Whole-Sign House System", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 17.5, "font": {"size": 12, "color": "#ffffff"}, "title": "Whole-Sign House System", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 3}, {"id": "index_equal_house", "label": "Equal House System", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Equal House System", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_ascendant", "label": "Ascendant (Lagna)", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Ascendant (Lagna)", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_compute_chart", "label": "computeChart() core pipeline", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 32.5, "font": {"size": 12, "color": "#ffffff"}, "title": "computeChart() core pipeline", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 9}, {"id": "index_aspect_lines", "label": "Aspect Lines", "color": {"background": "#BAB0AC", "border": "#BAB0AC", "highlight": {"background": "#ffffff", "border": "#BAB0AC"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Aspect Lines", "community": 9, "community_name": "Western Aspects", "source_file": "index.html", "file_type": "document", "degree": 0}, {"id": "index_time_scrubber", "label": "Time Scrubber", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Time Scrubber", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_save_bar", "label": "Save Bar (PDF, Share, Export)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Save Bar (PDF, Share, Export)", "community": 2, "community_name": "Save & Share System", "source_file": "index.html", "file_type": "document", "degree": 4}, {"id": "index_localstorage_save", "label": "localStorage Auto-Save", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "localStorage Auto-Save", "community": 2, "community_name": "Save & Share System", "source_file": "index.html", "file_type": "document", "degree": 4}, {"id": "index_share_link", "label": "Share Link (URL hash)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Share Link (URL hash)", "community": 2, "community_name": "Save & Share System", "source_file": "index.html", "file_type": "document", "degree": 4}, {"id": "index_json_export", "label": "JSON Export", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "JSON Export", "community": 2, "community_name": "Save & Share System", "source_file": "index.html", "file_type": "document", "degree": 4}, {"id": "index_pdf_print", "label": "PDF Print Layout", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "PDF Print Layout", "community": 2, "community_name": "Save & Share System", "source_file": "index.html", "file_type": "document", "degree": 1}, {"id": "index_recommendations_engine", "label": "Recommendations Engine", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Recommendations Engine", "community": 3, "community_name": "Recommendations Engine", "source_file": "index.html", "file_type": "document", "degree": 6}, {"id": "index_saturn_return", "label": "Saturn Return Window Rule", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Saturn Return Window Rule", "community": 3, "community_name": "Recommendations Engine", "source_file": "index.html", "file_type": "document", "degree": 1}, {"id": "index_nodal_axis_rule", "label": "Nodal Axis Rule (Rahu-Ketu)", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Nodal Axis Rule (Rahu-Ketu)", "community": 3, "community_name": "Recommendations Engine", "source_file": "index.html", "file_type": "document", "degree": 2}, {"id": "index_stellium_rule", "label": "Stellium Detection (3+ planets in sign)", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Stellium Detection (3+ planets in sign)", "community": 3, "community_name": "Recommendations Engine", "source_file": "index.html", "file_type": "document", "degree": 1}, {"id": "index_big_three", "label": "Big-Three Readout (Sun/Moon/Asc)", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Big-Three Readout (Sun/Moon/Asc)", "community": 3, "community_name": "Recommendations Engine", "source_file": "index.html", "file_type": "document", "degree": 1}, {"id": "index_context_textarea", "label": "Your Context Textarea", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Your Context Textarea", "community": 3, "community_name": "Recommendations Engine", "source_file": "index.html", "file_type": "document", "degree": 1}, {"id": "index_astronomy_engine", "label": "astronomy-engine library", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "astronomy-engine library", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "index.html", "file_type": "document", "degree": 4}, {"id": "index_cities_array", "label": "CITIES array (curated locations)", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "CITIES array (curated locations)", "community": 10, "community_name": "City Database", "source_file": "index.html", "file_type": "document", "degree": 0}, {"id": "index_chart_variant_grid", "label": "Six Chart Variant Grid", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Six Chart Variant Grid", "community": 6, "community_name": "Chart Variants Grid", "source_file": "index.html", "file_type": "document", "degree": 8}, {"id": "readme_astro_explorer", "label": "Astro Explorer (project)", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 40.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Astro Explorer (project)", "community": 4, "community_name": "Project Identity & Rationale", "source_file": "README.md", "file_type": "document", "degree": 12}, {"id": "readme_save_share_restore", "label": "Save / Share / Restore Triad", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Save / Share / Restore Triad", "community": 2, "community_name": "Save & Share System", "source_file": "README.md", "file_type": "document", "degree": 4}, {"id": "readme_no_backend_rationale", "label": "Rationale: no accounts, no backend", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Rationale: no accounts, no backend", "community": 2, "community_name": "Save & Share System", "source_file": "README.md", "file_type": "document", "degree": 1}, {"id": "readme_pure_static_rationale", "label": "Rationale: pure static single-file", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Rationale: pure static single-file", "community": 4, "community_name": "Project Identity & Rationale", "source_file": "README.md", "file_type": "document", "degree": 1}, {"id": "readme_play_tool_rationale", "label": "Rationale: play tool not professional reading", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Rationale: play tool not professional reading", "community": 4, "community_name": "Project Identity & Rationale", "source_file": "README.md", "file_type": "document", "degree": 1}, {"id": "readme_outer_planets_omitted", "label": "Rationale: outer planets omitted for legibility", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Rationale: outer planets omitted for legibility", "community": 4, "community_name": "Project Identity & Rationale", "source_file": "README.md", "file_type": "document", "degree": 1}, {"id": "readme_lahiri_anchor", "label": "Lahiri anchor: 23.85 deg J2000, drift 50.27 arcsec/yr", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Lahiri anchor: 23.85 deg J2000, drift 50.27 arcsec/yr", "community": 7, "community_name": "Lahiri Ayanamsa", "source_file": "README.md", "file_type": "document", "degree": 1}, {"id": "readme_credits_doncross", "label": "Credit: Don Cross (astronomy-engine)", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 12.5, "font": {"size": 0, "color": "#ffffff"}, "title": "Credit: Don Cross (astronomy-engine)", "community": 1, "community_name": "Core Astronomy Pipeline", "source_file": "README.md", "file_type": "document", "degree": 1}];
+const RAW_EDGES = [{"from": "test_js", "to": "test_geteclipticlongitude", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_getmeanlunarnode", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_longitudetosign", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_getayanamsa", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_getascendant", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_assert", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_approxeq", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_getnakshatra", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_getsublord", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_js", "to": "test_navamsasignof", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_geteclipticlongitude", "to": "test_getmeanlunarnode", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "test_getnakshatra", "to": "test_getsublord", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_western_wheel", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_western_wheel", "to": "index_compute_chart", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_north_indian_kundli", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_north_indian_kundli", "to": "index_compute_chart", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_north_indian_kundli", "to": "index_chart_variant_grid", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_lagan_rasi", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_lagan_rasi", "to": "index_lahiri_ayanamsa", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_lagan_rasi", "to": "index_chart_variant_grid", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_lagan_rasi", "to": "index_whole_sign_house", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_lagan_rasi", "to": "index_bhav_chalit", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_kp_chart", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_kp_chart", "to": "index_lahiri_ayanamsa", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_kp_chart", "to": "index_vimshottari_sublord", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_kp_chart", "to": "index_nakshatra", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_kp_chart", "to": "index_chart_variant_grid", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_kp_chart", "to": "index_nirayan_table", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_nirayan_table", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_nirayan_table", "to": "index_lahiri_ayanamsa", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_nirayan_table", "to": "index_chart_variant_grid", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_bhav_chalit", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_bhav_chalit", "to": "index_lahiri_ayanamsa", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_bhav_chalit", "to": "index_equal_house", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_bhav_chalit", "to": "index_chart_variant_grid", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_sayana_tropical", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_sayana_tropical", "to": "index_lahiri_ayanamsa", "label": "conceptually_related_to", "title": "conceptually_related_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_sayana_tropical", "to": "index_chart_variant_grid", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_navamsa_d9", "to": "readme_astro_explorer", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_navamsa_d9", "to": "index_lahiri_ayanamsa", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_navamsa_d9", "to": "index_navamsa_mapping", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_navamsa_d9", "to": "index_chart_variant_grid", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_lahiri_ayanamsa", "to": "readme_lahiri_anchor", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_lahiri_ayanamsa", "to": "index_compute_chart", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_mean_lunar_node", "to": "index_compute_chart", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_mean_lunar_node", "to": "index_nodal_axis_rule", "label": "references", "title": "references [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_nakshatra", "to": "index_vimshottari_sublord", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_whole_sign_house", "to": "index_compute_chart", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_whole_sign_house", "to": "index_equal_house", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_ascendant", "to": "index_compute_chart", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_ascendant", "to": "index_astronomy_engine", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_compute_chart", "to": "index_astronomy_engine", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_compute_chart", "to": "index_time_scrubber", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_compute_chart", "to": "index_recommendations_engine", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_time_scrubber", "to": "index_chart_variant_grid", "label": "calls", "title": "calls [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_save_bar", "to": "index_localstorage_save", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_save_bar", "to": "index_share_link", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_save_bar", "to": "index_json_export", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_save_bar", "to": "index_pdf_print", "label": "calls", "title": "calls [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_localstorage_save", "to": "readme_save_share_restore", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_localstorage_save", "to": "index_share_link", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_localstorage_save", "to": "index_json_export", "label": "shares_data_with", "title": "shares_data_with [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_share_link", "to": "readme_save_share_restore", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_share_link", "to": "index_json_export", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "index_json_export", "to": "readme_save_share_restore", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_recommendations_engine", "to": "index_saturn_return", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_recommendations_engine", "to": "index_nodal_axis_rule", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_recommendations_engine", "to": "index_stellium_rule", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_recommendations_engine", "to": "index_big_three", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_recommendations_engine", "to": "index_context_textarea", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_astronomy_engine", "to": "readme_astro_explorer", "label": "cites", "title": "cites [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "index_astronomy_engine", "to": "readme_credits_doncross", "label": "cites", "title": "cites [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_astro_explorer", "to": "readme_pure_static_rationale", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_astro_explorer", "to": "readme_play_tool_rationale", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_astro_explorer", "to": "readme_outer_planets_omitted", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_save_share_restore", "to": "readme_no_backend_rationale", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}];
+const LEGEND = [{"cid": 0, "color": "#4E79A7", "label": "Test Suite", "count": 11}, {"cid": 1, "color": "#F28E2B", "label": "Core Astronomy Pipeline", "count": 9}, {"cid": 2, "color": "#E15759", "label": "Save &amp; Share System", "count": 7}, {"cid": 3, "color": "#76B7B2", "label": "Recommendations Engine", "count": 7}, {"cid": 4, "color": "#59A14F", "label": "Project Identity &amp; Rationale", "count": 5}, {"cid": 5, "color": "#EDC948", "label": "KP &amp; Vedic Sub-Lord", "count": 3}, {"cid": 6, "color": "#B07AA1", "label": "Chart Variants Grid", "count": 3}, {"cid": 7, "color": "#FF9DA7", "label": "Lahiri Ayanamsa", "count": 3}, {"cid": 8, "color": "#9C755F", "label": "Navamsa D9", "count": 2}, {"cid": 9, "color": "#BAB0AC", "label": "Western Aspects", "count": 1}, {"cid": 10, "color": "#4E79A7", "label": "City Database", "count": 1}];
+
+// HTML-escape helper — prevents XSS when injecting graph data into innerHTML
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Build vis datasets
+const nodesDS = new vis.DataSet(RAW_NODES.map(n => ({
+  id: n.id, label: n.label, color: n.color, size: n.size,
+  font: n.font, title: n.title,
+  _community: n.community, _community_name: n.community_name,
+  _source_file: n.source_file, _file_type: n.file_type, _degree: n.degree,
+})));
+
+const edgesDS = new vis.DataSet(RAW_EDGES.map((e, i) => ({
+  id: i, from: e.from, to: e.to,
+  label: '',
+  title: e.title,
+  dashes: e.dashes,
+  width: e.width,
+  color: e.color,
+  arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+})));
+
+const container = document.getElementById('graph');
+const network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, {
+  physics: {
+    enabled: true,
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: {
+      gravitationalConstant: -60,
+      centralGravity: 0.005,
+      springLength: 120,
+      springConstant: 0.08,
+      damping: 0.4,
+      avoidOverlap: 0.8,
+    },
+    stabilization: { iterations: 200, fit: true },
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 100,
+    hideEdgesOnDrag: true,
+    navigationButtons: false,
+    keyboard: false,
+  },
+  nodes: { shape: 'dot', borderWidth: 1.5 },
+  edges: { smooth: { type: 'continuous', roundness: 0.2 }, selectionWidth: 3 },
+});
+
+network.once('stabilizationIterationsDone', () => {
+  network.setOptions({ physics: { enabled: false } });
+});
+
+function showInfo(nodeId) {
+  const n = nodesDS.get(nodeId);
+  if (!n) return;
+  const neighborIds = network.getConnectedNodes(nodeId);
+  const neighborItems = neighborIds.map(nid => {
+    const nb = nodesDS.get(nid);
+    const color = nb ? nb.color.background : '#555';
+    return `<span class="neighbor-link" style="border-left-color:${esc(color)}" onclick="focusNode(${JSON.stringify(nid)})">${esc(nb ? nb.label : nid)}</span>`;
+  }).join('');
+  document.getElementById('info-content').innerHTML = `
+    <div class="field"><b>${esc(n.label)}</b></div>
+    <div class="field">Type: ${esc(n._file_type || 'unknown')}</div>
+    <div class="field">Community: ${esc(n._community_name)}</div>
+    <div class="field">Source: ${esc(n._source_file || '-')}</div>
+    <div class="field">Degree: ${n._degree}</div>
+    ${neighborIds.length ? `<div class="field" style="margin-top:8px;color:#aaa;font-size:11px">Neighbors (${neighborIds.length})</div><div id="neighbors-list">${neighborItems}</div>` : ''}
+  `;
+}
+
+function focusNode(nodeId) {
+  network.focus(nodeId, { scale: 1.4, animation: true });
+  network.selectNodes([nodeId]);
+  showInfo(nodeId);
+}
+
+// Track hovered node — hover detection is more reliable than click params
+let hoveredNodeId = null;
+network.on('hoverNode', params => {
+  hoveredNodeId = params.node;
+  container.style.cursor = 'pointer';
+});
+network.on('blurNode', () => {
+  hoveredNodeId = null;
+  container.style.cursor = 'default';
+});
+container.addEventListener('click', () => {
+  if (hoveredNodeId !== null) {
+    showInfo(hoveredNodeId);
+    network.selectNodes([hoveredNodeId]);
+  }
+});
+network.on('click', params => {
+  if (params.nodes.length > 0) {
+    showInfo(params.nodes[0]);
+  } else if (hoveredNodeId === null) {
+    document.getElementById('info-content').innerHTML = '<span class="empty">Click a node to inspect it</span>';
+  }
+});
+
+const searchInput = document.getElementById('search');
+const searchResults = document.getElementById('search-results');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  searchResults.innerHTML = '';
+  if (!q) { searchResults.style.display = 'none'; return; }
+  const matches = RAW_NODES.filter(n => n.label.toLowerCase().includes(q)).slice(0, 20);
+  if (!matches.length) { searchResults.style.display = 'none'; return; }
+  searchResults.style.display = 'block';
+  matches.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'search-item';
+    el.textContent = n.label;
+    el.style.borderLeft = `3px solid ${n.color.background}`;
+    el.style.paddingLeft = '8px';
+    el.onclick = () => {
+      network.focus(n.id, { scale: 1.5, animation: true });
+      network.selectNodes([n.id]);
+      showInfo(n.id);
+      searchResults.style.display = 'none';
+      searchInput.value = '';
+    };
+    searchResults.appendChild(el);
+  });
+});
+document.addEventListener('click', e => {
+  if (!searchResults.contains(e.target) && e.target !== searchInput)
+    searchResults.style.display = 'none';
+});
+
+const hiddenCommunities = new Set();
+const legendEl = document.getElementById('legend');
+LEGEND.forEach(c => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  item.innerHTML = `<div class="legend-dot" style="background:${c.color}"></div>
+    <span class="legend-label">${c.label}</span>
+    <span class="legend-count">${c.count}</span>`;
+  item.onclick = () => {
+    if (hiddenCommunities.has(c.cid)) {
+      hiddenCommunities.delete(c.cid);
+      item.classList.remove('dimmed');
+    } else {
+      hiddenCommunities.add(c.cid);
+      item.classList.add('dimmed');
+    }
+    const updates = RAW_NODES
+      .filter(n => n.community === c.cid)
+      .map(n => ({ id: n.id, hidden: hiddenCommunities.has(c.cid) }));
+    nodesDS.update(updates);
+  };
+  legendEl.appendChild(item);
+});
+</script>
+<script>
+// Render hyperedges as shaded regions
+const hyperedges = [{"id": "vedic_sidereal_stack", "label": "Vedic Sidereal Stack", "members": ["index_lahiri_ayanamsa", "index_nakshatra", "index_vimshottari_sublord", "index_kp_chart", "index_navamsa_d9"], "relation": "co_participates_in", "confidence": "INFERRED", "confidence_score": 0.9, "source_file": "index.html", "note": "Lahiri ayanamsa, 27 nakshatras, Vimshottari sub-lord cycle, KP chart and Navamsa D9 all compose the Vedic sidereal pipeline."}, {"id": "save_targets", "label": "Save Targets", "members": ["index_localstorage_save", "index_share_link", "index_json_export", "index_pdf_print"], "relation": "co_participates_in", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "index.html", "note": "Four persistence/export destinations sharing the same snapshot() JSON shape."}, {"id": "chart_variant_grid_hyper", "label": "Six Chart Variant Grid", "members": ["index_lagan_rasi", "index_kp_chart", "index_nirayan_table", "index_bhav_chalit", "index_sayana_tropical", "index_navamsa_d9"], "relation": "co_participates_in", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "index.html", "note": "The six chart variants rendered together by renderAllVariants and computeAllVariants."}];
+// afterDrawing passes ctx already transformed to network coordinate space.
+// Draw node positions raw — no manual pan/zoom/DPR math needed.
+network.on('afterDrawing', function(ctx) {
+    hyperedges.forEach(h => {
+        const positions = h.nodes
+            .map(nid => network.getPositions([nid])[nid])
+            .filter(p => p !== undefined);
+        if (positions.length < 2) return;
+        ctx.save();
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = '#6366f1';
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        // Centroid and expanded hull in network coordinates
+        const cx = positions.reduce((s, p) => s + p.x, 0) / positions.length;
+        const cy = positions.reduce((s, p) => s + p.y, 0) / positions.length;
+        const expanded = positions.map(p => ({
+            x: cx + (p.x - cx) * 1.15,
+            y: cy + (p.y - cy) * 1.15
+        }));
+        ctx.moveTo(expanded[0].x, expanded[0].y);
+        expanded.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 0.4;
+        ctx.stroke();
+        // Label
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(h.label, cx, cy - 5);
+        ctx.restore();
+    });
+});
+</script>
+</body>
+</html>

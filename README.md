@@ -9,22 +9,31 @@ Built as a free experimentation tool for an astrologer's website. The depth live
 ## What it does
 
 - Renders a birth chart in two languages at once: Western circular wheel + North Indian Kundli
-- A grid of **all six chart variants** drawn in North Indian style:
-  - **Lagan (Rasi)** — Lahiri sidereal, whole-sign houses
-  - **KP Chart** — sub-lord and nakshatra detail in a Krishnamurti table
-  - **Nirayan** — sidereal degree-and-minute table
-  - **Bhav Chalit** — equal-house cusps applied to Lahiri positions
-  - **Sayana (Tropical)** — Western tropical zodiac
-  - **Navamsa D9** — 9th-harmonic divisional chart with proper Aries/Taurus/Gemini rules
+- A grid of **four focused chart variants** drawn in North Indian style:
+  - **Lagan (Rasi)** — Lahiri sidereal, whole-sign houses (the chart most Vedic astrologers read first)
+  - **Navamsa D9** — 9th-harmonic divisional chart with proper movable / fixed / dual sign rules
+  - **Sayana (Tropical)** — Western tropical zodiac for cross-tradition reading
+  - **KP detail** — Krishnamurti Paddhati table showing nakshatra, pada, star lord, and sub-lord
+
+  *Bhav Chalit (Equal-House) and a separate Nirayan table are intentionally not shown — the former is a half-truth approximation, and the latter duplicates Lagan in tabular form.*
 - Date / time / location input with a curated list of global cities
 - Toggle between **Tropical** (Western) and **Sidereal / Lahiri** (Vedic) zodiac
 - A timeline scrubber with play / pause and speed controls (Day · Month · Year · Decade per second)
 - Snap buttons: jump to **birth**, **today**, **+1 year**, **±10 years**
 - Tap any planet — get its sign, house, degree, and a short interpretation
 - Whole-sign houses by default, the same system used in classical Vedic astrology
-- **Recommendations** rule-based engine derived from the chart (Saturn return windows, nodal axis, stelliums, big-three readout)
-- **Your context** textarea — paste relevant Obsidian / journal notes; keywords cross-reference with house themes
+- **Notable patterns** rule-based engine — only fires on real signal: stelliums, Saturn-return windows, nodal axis on an angular house. Empty state is honest about it.
+- **Your own notes** textarea — paste journal text, current question, anything; keyword matching cross-references with house themes (career → H10, relationship → H7, money → H2, etc.)
+- **Astrologer CTA** — placeholder slot at the bottom for the page owner's booking link. This is what makes it a lead-gen tool and not a personal toy.
 - **Save as PDF** via the browser's print dialog, with a clean printable layout
+
+## What is intentionally NOT here
+
+- **Western aspects in sidereal mode** — graha drishti is a different system; mixing them confuses the read
+- **Bhav Chalit** as a separate chart — Equal-House is an approximation, easy to mislead
+- **A separate Nirayan table** — it's the same data as Lagan in different presentation
+- **Real Obsidian / Drive integration** — browsers can't read your local files for security reasons; the textarea is a paste-in workaround
+- **freeastrologyapi.com proxy** — needs a serverless function to keep an API key safe; out of scope for a static site
 
 ## Save · Share · Restore
 
